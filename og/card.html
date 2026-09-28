@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- Source of assets/og.png (the 1200x630 share card). Not linked from the page.
+     Re-render: serve the folder, open this at 1200x630, screenshot to assets/og.png. -->
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>FRONTLINE share card</title>
+<style>
+  @font-face { font-family: "IBM Plex Sans Hebrew"; font-weight: 400; src: url(../assets/fonts/plex-400-hebrew.woff2) format("woff2"); unicode-range: U+0590-05FF, U+FB1D-FB4F; }
+  @font-face { font-family: "IBM Plex Sans Hebrew"; font-weight: 400; src: url(../assets/fonts/plex-400-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: "IBM Plex Sans Hebrew"; font-weight: 700; src: url(../assets/fonts/plex-700-hebrew.woff2) format("woff2"); unicode-range: U+0590-05FF, U+FB1D-FB4F; }
+  @font-face { font-family: "IBM Plex Sans Hebrew"; font-weight: 700; src: url(../assets/fonts/plex-700-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  html, body { margin: 0; }
+  body {
+    inline-size: 1200px; block-size: 630px; overflow: hidden;
+    display: grid; grid-template-columns: 400px 1fr; align-items: center; gap: 64px;
+    padding-inline: 96px; box-sizing: border-box;
+    background: #FBF8F2; color: #3F2E27; font-family: "IBM Plex Sans Hebrew", sans-serif;
+  }
+  img { inline-size: 400px; block-size: auto; display: block; }
+  h1 { margin: 0; font: 700 88px/1 "IBM Plex Sans Hebrew"; letter-spacing: 0.05em; }
+  .tag { margin: 18px 0 0; font-size: 22px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #8A2724; }
+  .line { margin: 40px 0 0; font-size: 30px; line-height: 1.5; }
+  .line span { display: block; }
+  h1, .tag { text-align: end; }
+  em { font-style: normal; font-weight: 700; color: #8A2724; }
+</style>
+</head>
+<body>
+  <img src="../assets/img/mark.webp" width="440" height="404" alt="">
+  <div>
+    <h1 dir="ltr" lang="en">FRONTLINE</h1>
+    <p class="tag" dir="ltr" lang="en">360° Social Innovation</p>
+    <p class="line"><span>רואים ארגון חברתי <em>מכל זווית</em>: מההנהלה, מהעובדים ומהשטח.</span> <span>ועוברים <em>את כל הדרך</em>: לומדים, עובדים בשטח, ומקימים משהו משלכם.</span></p>
+  </div>
+</body>
+</html>

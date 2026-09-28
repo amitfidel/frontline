@@ -1,0 +1,8 @@
+# Lighthouse reports stay local
+qa/*.json
+
+# scratch
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
