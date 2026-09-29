@@ -14,8 +14,10 @@ trap 'rm -rf "$tmp"' EXIT
 clones=0
 fresh() {  # a new clone, so what one test commits cannot leak into the next
   clones=$((clones + 1)); site=$tmp/site$clones
-  git clone -q "$here" "$site" || exit 2
-  cp "$gate" "$site/gate.sh" || exit 2
+  # --no-hardlinks: copies, so a run beside another run (or beside commits in
+  # the same object store) cannot trip git's hardlink check mid-clone.
+  git clone -q --no-hardlinks "$here" "$site" || { echo "GATE TESTS COULD NOT RUN: git clone failed"; exit 2; }
+  cp "$gate" "$site/gate.sh" || { echo "GATE TESTS COULD NOT RUN: could not copy the gate"; exit 2; }
   git -C "$site" config user.name "$(git -C "$here" config user.name)"
   git -C "$site" config user.email "$(git -C "$here" config user.email)"
   # A valid list that matches nothing. (The brackets keep the word from matching
