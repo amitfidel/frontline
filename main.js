@@ -659,10 +659,11 @@
   if (!st) once(doc.querySelectorAll(".section"), (s) => s.classList.add("is-wired"), { rootMargin: "0px 0px -28% 0px" }); // W1
 
   // The ring (S1). Phones with scroll timelines: the CSS draws it with the thumb, by turning
-  // clips over copies of the arcs (transforms only; the arcs are painted once), and the
-  // readout (R3) counts the same travel through 13 observer thresholds. Phones without:
-  // today's one-shot close, one turn of the hand, the readout counting through it. Wide
-  // screens: the sticky ring closes arc by arc as each step is read.
+  // clips over copies of the arcs (it still repaints on about half the frames, README, Motion),
+  // and the readout (R3) counts the same travel through 13 observer thresholds. Phones
+  // without: today's one-shot close, one turn of the hand, the readout counting through it.
+  // Wide screens: the sticky ring closes arc by arc as each step is read. A screen that
+  // crosses 900 px (a window resized, a phone turned) switches to the other width's ring.
   const ringWrap = doc.querySelector(".ring-wrap");
   const ring = ringWrap && ringWrap.querySelector(".ring");
   const deg = ring && ring.querySelector(".deg");
@@ -675,6 +676,7 @@
   const show = (d) => { deg.textContent = `${d}°`; ringWrap.classList.toggle("is-full", d === 360); };
   const close = () => { ring.classList.add("is-all"); ring.dataset.step = "3"; show(360); };
   if (reduce || ringMode === "off") { close(); return; }
+  const steps = doc.querySelectorAll(".step");
   const stepIO = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting || !wide.matches) continue;
@@ -683,15 +685,26 @@
       show(s * 120);
     }
   }, { rootMargin: "-45% 0px -45% 0px" });
-  doc.querySelectorAll(".step").forEach((s) => stepIO.observe(s));
-  wide.addEventListener("change", () => { if (!wide.matches) close(); });
-  if (wide.matches) { show(0); return; }
-  if (st && ringMode === "scroll") {
-    ring.classList.add("is-all");
-    ring.dataset.step = "3"; // the closed ring is the base; the reveal draws over it
-    // The reveal: per half of the ring, a static clip, a turning clip inside it, and inside that
-    // an upright copy of the three arcs (their own path data, so there is one source). It goes
-    // first in the figure, so the hand still paints over it and ".ring + .hand" still matches.
+  steps.forEach((s) => stepIO.observe(s));
+  // Observing again delivers a fresh first entry, so after a width change the ring reads its
+  // position the way a fresh load at that width would.
+  const reobserve = (io, targets) => targets.forEach((t) => { io.unobserve(t); io.observe(t); });
+  // Wide: the ring as a wide load leaves it, then the step being read.
+  const toWide = () => {
+    ring.classList.remove("is-all");
+    ringWrap.classList.remove("is-turning");
+    ring.dataset.step = "0";
+    show(0);
+    reobserve(stepIO, steps);
+  };
+  let toNarrow = close; // a phone after a wide load, without the thumb path: the closed ring
+  const thumb = st && ringMode === "scroll";
+  if (thumb) {
+    // The reveal is built at any width, since a wide screen can become a phone one (the CSS
+    // shows it only on phones): per half of the ring, a static clip, a turning clip inside it,
+    // and inside that an upright copy of the three arcs (their own path data, so there is one
+    // source). It goes first in the figure, so the hand still paints over it and ".ring + .hand"
+    // still matches.
     const SVG_NS = "http://www.w3.org/2000/svg";
     const paths = [...ring.querySelectorAll(".arc")].map((a) => a.getAttribute("d"));
     const reveal = make("span", "reveal");
@@ -723,22 +736,43 @@
       const f = Math.min(1, Math.max(0, (0.85 * innerHeight - r.top) / r.height));
       show(Math.floor(f * 12 + 0.01) * 30);
     };
-    new IntersectionObserver(sync, { threshold: Array.from({ length: 13 }, (_, i) => i / 12), rootMargin: "0px 0px -15% 0px" }).observe(ringWrap);
-    new IntersectionObserver(sync, { rootMargin: "0px 0px 100000px 0px" }).observe(ringWrap);
-  } else {
+    const syncIO = [
+      new IntersectionObserver(sync, { threshold: Array.from({ length: 13 }, (_, i) => i / 12), rootMargin: "0px 0px -15% 0px" }),
+      new IntersectionObserver(sync, { rootMargin: "0px 0px 100000px 0px" }),
+    ];
+    // The closed ring is the base and the reveal draws over it; the observers read the travel.
+    toNarrow = () => {
+      ring.classList.add("is-all");
+      ring.dataset.step = "3";
+      syncIO.forEach((io) => reobserve(io, [ringWrap]));
+    };
+  }
+  // Act on a real change of side only: a change event can arrive without one (a full-page
+  // screenshot sends one), and a wide ring must not reset to 0 on it.
+  let isWide = wide.matches;
+  wide.addEventListener("change", () => {
+    if (wide.matches === isWide) return;
+    isWide = wide.matches;
+    (isWide ? toWide : toNarrow)();
+  });
+  if (wide.matches) { show(0); return; }
+  if (thumb) toNarrow();
+  else {
     // One move, once the whole ring is above the 85% line, so the turn is seen whole.
-    // A screen too short to hold it closes the ring once half of it shows.
+    // A screen too short to hold it closes the ring once half of it shows. Never on a wide
+    // screen, which steps its own ring; a phone that was wide in between shows the closed ring.
     show(0);
     const io = new IntersectionObserver((entries) => {
       const e = entries[entries.length - 1];
       const tall = e.rootBounds && e.boundingClientRect.height > 0.95 * e.rootBounds.height;
-      if (!(e.intersectionRatio >= 0.99 || (tall && e.intersectionRatio >= 0.5))) return;
+      if (wide.matches || !(e.intersectionRatio >= 0.99 || (tall && e.intersectionRatio >= 0.5))) return;
       io.disconnect();
       close();
       show(0);
       ringWrap.classList.add("is-turning");
-      for (let i = 1; i <= 12; i++) setTimeout(() => show(i * 30), (i * 700) / 12);
+      for (let i = 1; i <= 12; i++) setTimeout(() => { if (!wide.matches) show(i * 30); }, (i * 700) / 12);
     }, { threshold: [0.5, 1], rootMargin: "0px 0px -15% 0px" });
     io.observe(ringWrap);
+    toNarrow = () => { io.disconnect(); close(); };
   }
 })();

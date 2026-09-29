@@ -305,8 +305,9 @@ h2.display::after {
    Each half of the ring box is a static clip; inside it a half-plane clip turns on the ring's
    centre over a full-size upright copy of the arcs. Physical left and right on purpose: the
    angles are physical, clockwise from the top. The clips paint nothing themselves, so they are
-   visibility: hidden: Chrome then neither repaints them nor counts a turning clip as a layout
-   shift (it did, CLS 0.03). Only the copies, which never move on screen, are visible. */
+   visibility: hidden: Chrome then does not count a turning clip as a layout shift (it did,
+   CLS 0.03). Only the copies, which never move on screen, are visible. The page still repaints
+   on about half the frames while the ring draws (README, the ring's gate). */
 .reveal { display: none; position: absolute; inset: 0; pointer-events: none; }
 .reveal span { position: absolute; }
 .reveal .half { top: 0; width: 50%; height: 100%; overflow: hidden; visibility: hidden; }
@@ -774,10 +775,9 @@ h2.display::after {
       animation-timeline: view();
     }
   }
-  /* R1, R2 on phones: the ring draws while it travels up the lower part of the screen, with
-     transforms only: the painted arcs step aside for the reveal (main.js builds it), whose clips
-     and copies turn with the hand. The readout (R3, main.js) watches the same travel with the
-     same 15% inset. */
+  /* R1, R2 on phones: the ring draws while it travels up the lower part of the screen: the
+     painted arcs step aside for the reveal (main.js builds it), whose clips and copies turn
+     with the hand. The readout (R3, main.js) watches the same travel with the same 15% inset. */
   @media (prefers-reduced-motion: no-preference) and (max-width: 899.98px) {
     .st .ring-wrap[data-ring="scroll"] { view-timeline-name: --ring; view-timeline-axis: block; view-timeline-inset: 0% 15%; }
     .st .ring-wrap[data-ring="scroll"] .ring .arc { visibility: hidden; }
