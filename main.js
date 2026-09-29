@@ -4,18 +4,25 @@
 (() => {
   "use strict";
   const C = window.FRONTLINE || {};
-  for (const k of Object.keys(C)) if (typeof C[k] === "number") C[k] = String(C[k]); // SEATS: 20 works too
+  // SEATS: 15 works as well as "15". Every other key is text, so a bare number
+  // there (BACKING_TEXT: 0) stays unfilled instead of printing as the line.
+  if (typeof C.SEATS === "number") C.SEATS = String(C.SEATS);
   const doc = document;
   const WA_OPENER = "שלום, הגעתי מהאתר של FRONTLINE ואשמח לשמוע על שיתוף פעולה.";
   const MAIL_SUBJECT = "FRONTLINE, שיתוף פעולה";
 
   // ---- values -------------------------------------------------------------
-  // Unfilled marker: the config.js prefix in any case, with or without padding,
-  // and its near-misses (a dash, a colon or a space instead of the underscore).
+  // Unfilled marker: the config.js prefix in any case, with anything that is not a
+  // letter or a digit in front of it (spaces, quotes, gershayim), and its near-misses
+  // (a dash, a colon or a space instead of the underscore). fold() first turns
+  // fullwidth letters into plain ones and drops invisible marks (RLM, LRM, zero-width
+  // space, BOM), so a pasted value cannot hide the marker from the test.
   // Written as a regex so the publish grep for the literal marker only ever hits config.js.
-  const MARK = /^\s*todo(?![a-z])[\s_:\-]*/i;
-  const pending = (v) => typeof v === "string" && MARK.test(v);
-  const blank = (v) => typeof v !== "string" || v.trim() === "" || pending(v);
+  const MARK = /^[^\p{L}\p{N}]*todo(?![a-z])[\s_:-]*/iu;
+  const fold = (v) => v.normalize("NFKC").replace(/\p{DI}/gu, "");
+  const pending = (v) => typeof v === "string" && MARK.test(fold(v));
+  // Filled means text with a letter or a digit in it that does not open with the marker.
+  const blank = (v) => typeof v !== "string" || !/[\p{L}\p{N}]/u.test(fold(v)) || pending(v);
 
   const httpUrl = (v) => {
     if (blank(v)) return null;
@@ -50,11 +57,13 @@
     if (text != null) n.textContent = text;
     return n;
   };
-  const ltr = (text) => { const b = make("bdi", null, text); b.dir = "ltr"; return b; };
+  const bdi = (text, dir) => { const b = make("bdi", null, text); b.dir = dir; return b; };
+  const ltr = (text) => bdi(text, "ltr");
   const chip = (v, label) => {
     const c = make("span", "todo");
     c.append(make("b", null, "למילוי"));
-    const hint = label || (pending(v) ? v.replace(MARK, "").trim() : "");
+    // The hint is the text after the marker, without the quotes a typo wrapped it in.
+    const hint = label || (pending(v) ? fold(v).replace(MARK, "").replace(/[\s\p{Pi}\p{Pf}"'`\u05F3\u05F4]+$/u, "") : "");
     if (hint) c.append(" · " + hint);
     return c;
   };
@@ -63,10 +72,12 @@
     console.warn(`FRONTLINE config: ${key} was rejected, check its format in config.js`);
     return chip(null, "לבדוק את הערך");
   };
-  // Day.month dates sit in their own LTR run, so RTL can never reorder the digits.
-  const LTR_KEYS = new Set(["DEADLINE", "ANSWER_DATE"]);
-  const valueNode = (key) =>
-    blank(C[key]) ? chip(C[key]) : LTR_KEYS.has(key) ? ltr(C[key].trim()) : doc.createTextNode(C[key].trim());
+  // A date is Hebrew text in its own isolated right-to-left run: the digits of 27.10
+  // still read left to right (a number always does), nothing around the date can
+  // pull them apart, and a date in words (27 באוקטובר) reads in the right order.
+  const DATE_KEYS = new Set(["DEADLINE", "ANSWER_DATE"]);
+  const plain = (key, s) => (DATE_KEYS.has(key) ? bdi(s, "rtl") : doc.createTextNode(s));
+  const valueNode = (key) => (blank(C[key]) ? chip(C[key]) : plain(key, C[key].trim()));
   const link = (href, content, external) => {
     const a = make("a");
     a.href = href;
@@ -146,7 +157,8 @@
     PARTNER_WHATSAPP: (v) => (waDigits(v) ? v.trim() : null),
     INSTAGRAM_URL: httpUrl,
     AGUDA_URL: httpUrl,
-    SEATS: (v) => (/^\d{1,4}$/.test(v.trim()) ? v.trim() : null), // the page adds "מקומות"
+    // "מקומות" comes with the number, not from index.html, so a chip there never reads "מקומות מקומות".
+    SEATS: (v) => (/^\d{1,4}$/.test(v.trim()) ? `${v.trim()} מקומות` : null),
   };
   doc.querySelectorAll("[data-cfg]").forEach((n) => {
     const key = n.dataset.cfg;
@@ -154,7 +166,7 @@
     if (blank(v)) { n.replaceWith(chip(v)); return; }
     const out = check[key] ? check[key](v) : v.trim();
     if (!out) { n.replaceWith(badChip(key)); return; }
-    n.replaceWith(n.hasAttribute("data-ltr") || LTR_KEYS.has(key) ? ltr(out) : doc.createTextNode(out));
+    n.replaceWith(n.hasAttribute("data-ltr") ? ltr(out) : plain(key, out));
   });
 
   // ---- university logo: only beside a filled backing line --------------------

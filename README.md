@@ -13,7 +13,7 @@ One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step, 
 | `styles.css` | Design tokens and layout (logical CSS properties only). |
 | `main.js` | Reads `config.js`, fills the page, runs the reveals and the ring. |
 | `gate.sh` | The publish gate. Run it before every push. |
-| `gate-test.sh` | Tests the gate itself on a throwaway clone (a malformed word list must fail, a missing one must not pass). |
+| `gate-test.sh` | Tests the gate itself on a throwaway clone (a malformed word list must fail, a missing one must not pass, every marker typo in `config.js` must be named). |
 | `assets/fonts/` | Self-hosted woff2 (IBM Plex Sans Hebrew 400/700, Karantina 700) and their OFL licences. |
 | `assets/img/` | The logo mark, the three step images, and the student union and Reichman University logos (WebP; the two logos have a transparent background, cut from the files they came in, not redrawn). |
 | `assets/og.png` | The 1200x630 share card. Source: `og/card.html`. |
@@ -22,7 +22,7 @@ One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step, 
 
 ## How placeholders work / איך עובדים הערכים למילוי
 
-Every unconfirmed value in `config.js` starts with `TODO_`. On the page it renders as a dashed chip that says **למילוי** plus the hint written after `TODO_`, so it can never be read as a fact. The prefix is recognised in any case and with stray spaces, so `" todo_..."` is still a chip. Replace a value only when it is true.
+Every unconfirmed value in `config.js` starts with `TODO_`. On the page it renders as a dashed chip that says **למילוי** plus the hint written after `TODO_`, so it can never be read as a fact. The prefix is recognised in any case and through the typos a paste can add: spaces, quotes, gershayim or an invisible direction mark in front of it, or fullwidth letters. So `" todo_..."` is still a chip, and the gate names the line so it gets fixed. A value with no letter or digit in it is a chip too, and so is a bare number in any key but `SEATS`. Replace a value only when it is true.
 
 A value that is filled but malformed (a link without `https://`, an email without `@`, a phone number with words around it) renders as a chip that says **לבדוק את הערך**, never as a dead link, and the browser console names the key that was rejected.
 
@@ -38,8 +38,8 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `PARTNER_EMAIL` | The club's email, for the partner "מייל" button and the footer. Never a personal address. | המייל של המועדון, לכפתור "מייל" ולתחתית הדף. לא כתובת אישית. | an email address |
 | `PARTNER_WHATSAPP` | The club's WhatsApp number for the "וואטסאפ" button. Never a personal number. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון. לא מספר אישי. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
 | `SEATS` | Places for participants only; the four managers are not counted. Shown as "15 מקומות". A number only: the page adds the word, so anything else is a "לבדוק את הערך" chip. | מספר המקומות למשתתפים בלבד, בלי המנהלים. מספר בלבד, המילה "מקומות" נוספת לבד. | a number |
-| `DEADLINE` | Last day to apply (hero and FAQ). Kept in its own LTR run, so the digits never reorder. | התאריך האחרון להרשמה. | day.month, e.g. `27.10` |
-| `ANSWER_DATE` | When applicants hear back (FAQ). Same LTR handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
+| `DEADLINE` | Last day to apply (hero and FAQ). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. | התאריך האחרון להרשמה. | day.month, e.g. `27.10` |
+| `ANSWER_DATE` | When applicants hear back (FAQ). Same handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
 | `MEETING_DAY_TIME` | Weekly meeting day and time (hero chip and FAQ). | יום ושעת המפגש השבועי. | day and time |
 | `BACKING_TEXT` | The backing line under the logo, in the wording the student union approves. Filling it also shows `REICHMAN_LOGO` above it. | שורת הגיבוי מתחת ללוגו, בנוסח שהאגודה מאשרת. מילוי השורה מציג גם את לוגו האוניברסיטה. | free text |
 | `PARTICIPANT_COST` | FAQ "כמה זה עולה?". A full sentence once decided (if free: `ההשתתפות בחינם.`). | עלות ההשתתפות, משפט שלם. | sentence |
@@ -70,6 +70,7 @@ It must end with `RESULT: PASS`. It checks what a push would publish (every comm
 4. The GitHub handle appears only as the site URL, the repo name, the bare username or the noreply address. A Windows user folder or its short form is a finding.
 5. No local machine paths, in text or in image files.
 6. The privacy grep: `git grep -l -a -i -E -f .gate-private` over the files and every commit, and over the commit messages. The word list sits in `.gate-private`, which is gitignored on purpose, because listing the words in this public README would publish them. Without that file the gate says `COULD NOT CHECK` and does not pass.
+7. In `config.js` every unfilled marker opens its value, spelled exactly `TODO_`, and nothing is in fullwidth letters. A marker behind a quote, an invisible mark or a space, or in the middle of a value, is named by line. The page shows a chip for the first kinds, but it prints a marker in the middle of a value as text.
 
 Then by hand: open the page and search for **לבדוק**. It must find nothing. Every **למילוי** chip still on the page should be one you chose to publish.
 
@@ -79,7 +80,6 @@ Then by hand: open the page and search for **לבדוק**. It must find nothing.
    - At least one field-meeting host date in writing.
    - The insurance answer for physical off-campus work, in writing, before the lines about work clothes and working beside the staff go public.
    - The union's wording for `BACKING_TEXT`. It also switches on the university logo, so fill it only with the approved text.
-   - The club's own email and WhatsApp number.
    - The FAQ policy keys decided, or deliberately left as chips.
    - A GoatCounter account.
 2. `gh auth status` shows `amitfidel` active, then `gh repo create amitfidel/frontline --public --source=. --push`.

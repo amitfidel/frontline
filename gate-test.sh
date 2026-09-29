@@ -31,6 +31,29 @@ expect() {  # expect "<name>" <wanted exit> "<text the output must contain>"
 printf 'zzqx-gate-c[o]ntrol-word\n' > "$tmp/site/.gate-private"
 expect "valid list, clean tree: PASS" 0 "RESULT: PASS"
 
+# Marker typos in config.js. The page reads the first kinds as unfilled, and the
+# gate must still name every one. Each is added as one more line of text (the
+# gate reads the file, it does not run it). The marker is split so this file
+# never holds it.
+m='T''ODO_'
+typo() {  # typo "<what>" "<the value, printf escapes allowed>"
+  git -C "$tmp/site" checkout -q -- config.js
+  printf "  BACKING_TEXT: \"$2\",\n" >> "$tmp/site/config.js"
+  expect "$1: FAIL" 1 "FAIL  unfilled markers in config.js"
+}
+typo "RLM before the marker" "\342\200\217${m}x"
+typo "LRM before the marker" "\342\200\216${m}x"
+typo "zero-width space before the marker" "\342\200\213${m}x"
+typo "marker in double quotes" '\\"'"${m}x"'\\"'
+typo "marker in single quotes" "'${m}x'"
+typo "marker in gershayim" "\327\264${m}x\327\264"
+typo "marker in fullwidth letters" '\357\274\264\357\274\257\357\274\244\357\274\257_x'
+typo "marker in the middle of a value" "\327\251\327\225\327\250\327\224 ${m}x"
+git -C "$tmp/site" checkout -q -- config.js
+printf '  EXTRA: "%sx",\n' "$m" >> "$tmp/site/config.js"
+expect "marker spelled the one way: PASS" 0 "RESULT: PASS"
+git -C "$tmp/site" checkout -q -- config.js
+
 # A malformed pattern line must fail the private-word check by name, never read as clean.
 printf 'zzqx-gate-c[o]ntrol-word\n(unclosed\n' > "$tmp/site/.gate-private"
 expect "malformed pattern: FAIL" 1 "FAIL  no private words"

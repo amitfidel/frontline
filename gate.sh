@@ -74,6 +74,18 @@ else
     git log --all --format=%B | g grep -niE -f .gate-private)"
 fi
 
+# 7. In config.js every unfilled marker opens its value, spelled exactly as the
+#    header says, and nothing is in fullwidth letters. A marker behind a quote, an
+#    invisible direction mark or a space, or in the middle of a value, is named by
+#    line: the page shows a chip for the first kinds, but prints one in the middle
+#    as text. Comment lines are skipped. The last grep keeps a SEARCH FAILED line,
+#    so a failed first search still fails the check.
+FULLWIDTH=$(printf '\357\274[\201-\277]|\357\275[\200-\236]')  # U+FF01-FF5E as UTF-8 bytes
+report "unfilled markers in config.js open their value, spelled one way" "$(
+  g grep -nvE '^[[:space:]]*(/?\*|//)' config.js |
+    sed -E "s/[[:alnum:]_]+[\"']?:[[:space:]]*[\"']T[O]DO_//g" | g grep -iE 't[o]do|^SEARCH FAILED'
+  g env LC_ALL=C grep -nE "$FULLWIDTH" config.js)"
+
 echo
 echo "By hand: open the page and search for \"לבדוק\". It must find nothing."
 echo "Every \"למילוי\" chip still on the page should be one you chose to publish."
