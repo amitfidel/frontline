@@ -252,12 +252,21 @@
     // "מקומות" comes with the number, not from index.html, so a chip there never reads "מקומות מקומות".
     SEATS: (v) => (/^\d{1,4}$/.test(v.trim()) ? `${v.trim()} מקומות` : null),
   };
+  // The backing line breaks only after a comma, so the union's and the university's names stay
+  // whole on a phone. One wrapper (one grid item beside the logo), inline-block phrases inside;
+  // the text is the value, unchanged.
+  const phrases = (s) => {
+    const w = make("span");
+    s.split(/(?<=,) /).forEach((part, i) => { if (i) w.append(" "); w.append(make("span", "phrase", part)); });
+    return w;
+  };
   doc.querySelectorAll("[data-cfg]").forEach((n) => {
     const key = n.dataset.cfg;
     const v = C[key];
     if (blank(v)) { n.replaceWith(chip(v)); return; }
     const out = check[key] ? check[key](v) : v.trim();
     if (!out) { n.replaceWith(badChip(key)); return; }
+    if (key === "BACKING_TEXT") { n.replaceWith(phrases(out)); return; }
     n.replaceWith(n.hasAttribute("data-ltr") ? ltr(out) : plain(key, out));
   });
 

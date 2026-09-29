@@ -146,6 +146,7 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 /* The university logo exists on the page only here, beside the filled line (main.js). */
 .backing.has-logo { display: grid; justify-items: center; gap: var(--s-2); margin-block-start: var(--s-5); }
 .backing-logo { block-size: 3rem; inline-size: auto; }
+.backing .phrase { display: inline-block; } /* the line breaks only between its phrases (main.js) */
 .lead {
   margin-block-start: var(--s-5);
   max-inline-size: 30ch;
