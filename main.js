@@ -82,7 +82,12 @@
   // pull them apart, and a date in words (27 באוקטובר) reads in the right order.
   const DATE_KEYS = new Set(["DEADLINE", "ANSWER_DATE"]);
   const plain = (key, s) => (DATE_KEYS.has(key) ? bdi(s, "rtl") : doc.createTextNode(s));
-  const valueNode = (key) => (blank(C[key]) ? chip(C[key]) : plain(key, C[key].trim()));
+  // In an FAQ answer the meeting time is one fact a student scans for: it never breaks.
+  const valueNode = (key) => {
+    if (blank(C[key])) return chip(C[key]);
+    if (key !== "MEETING_DAY_TIME") return plain(key, C[key].trim());
+    return make("span", "nowrap", C[key].trim());
+  };
   const link = (href, content, external) => {
     const a = make("a");
     a.href = href;
@@ -624,7 +629,22 @@
   };
   const SOON = { rootMargin: "0px 0px -8% 0px" };
   once(doc.querySelectorAll("[data-reveal]"), (n) => n.classList.add("is-in"), SOON);                    // C1
-  once(doc.querySelectorAll(".frame"), (f) => f.classList.add("is-locked"), { ...SOON, threshold: 0.6 }); // N1
+  // N1: a frame locks on when 60% of it is in view, or, on a screen too short for that (a
+  // phone held sideways), when it fills 60% of the screen. A frame the reader has passed,
+  // however fast, locks too: the second observer watches the band above the screen. So no
+  // frame is ever left dimmed.
+  const frames = doc.querySelectorAll(".frame");
+  const lockIO = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const h = e.rootBounds ? e.rootBounds.height : innerHeight;
+      if (e.intersectionRatio < 0.6 && e.intersectionRect.height < 0.6 * h) continue;
+      lockIO.unobserve(e.target);
+      e.target.classList.add("is-locked");
+    }
+  }, { ...SOON, threshold: Array.from({ length: 21 }, (_, i) => i / 20) });
+  frames.forEach((f) => lockIO.observe(f));
+  once(frames, (f) => { lockIO.unobserve(f); f.classList.add("is-locked"); }, { rootMargin: "100000px 0px -100% 0px" }); // passed
   once([doc.querySelector(".angles")], (a) => a.classList.add("is-in"), { ...SOON, threshold: 1 });     // N3
   once([term], (t) => t.classList.add("is-armed"), { threshold: 0.8 });                                  // E1, E2
   if (!st) once(doc.querySelectorAll(".section"), (s) => s.classList.add("is-wired"), { rootMargin: "0px 0px -28% 0px" }); // W1
@@ -638,7 +658,9 @@
   const deg = ring && ring.querySelector(".deg");
   if (!ring || !deg) return;
   const wide = matchMedia("(min-width: 900px)");
-  const ringMode = ringWrap.dataset.ring || "scroll";
+  // Only an explicit data-ring="scroll" takes the thumb-linked path, which failed its gate;
+  // a missing or unknown value reads as "once", the shipped mode, as the CSS reads it too.
+  const ringMode = ["scroll", "off"].includes(ringWrap.dataset.ring) ? ringWrap.dataset.ring : "once";
   const show = (d) => { deg.textContent = `${d}°`; ringWrap.classList.toggle("is-full", d === 360); };
   const close = () => { ring.classList.add("is-all"); ring.dataset.step = "3"; show(360); };
   if (reduce || ringMode === "off") { close(); return; }

@@ -34,11 +34,11 @@ Anything that is club policy and not yet decided lives in its own key and appear
 
 | Key | English | עברית | Format |
 |---|---|---|---|
-| `SIGNUP_URL` | Sign-up form link. Until it is real, the hero button reads "ההרשמה נפתחת בקרוב" and unfolds the sign-up panel, and the terminal's puck turns the card to the same actions. Once it is real, the hero button and the puck are links to the form. Fill it **last**. | קישור לטופס ההרשמה. עד שהוא אמיתי, הכפתור כתוב "ההרשמה נפתחת בקרוב" ופותח את הפאנל עם הפעולות האמיתיות. ממלאים אחרון. | `https://...` |
+| `SIGNUP_URL` | Sign-up form link. Until it is real, the hero button reads "ההרשמה נפתחת בקרוב" and unfolds the sign-up panel, and the terminal's puck turns the card to the same actions. Once it is real, the hero button and the puck are links to the form. Fill it **last**. | קישור לטופס ההרשמה. עד שהוא אמיתי, על הכפתור כתוב "ההרשמה נפתחת בקרוב", והוא פותח פאנל עם הפעולות האמיתיות. גם הדמות שמחליקים בסוף הדף הופכת את הכרטיס לאותן פעולות. ממלאים אחרון. | `https://...` |
 | `PARTNER_EMAIL` | The club's email, for the partner "מייל" button and the footer. Never a personal address. | המייל של המועדון, לכפתור "מייל" ולתחתית הדף. לא כתובת אישית. | an email address |
 | `PARTNER_WHATSAPP` | The club's WhatsApp number: the partner "וואטסאפ" button (partner opener), and, in the sign-up panel, "כתבו לנו בוואטסאפ" for students (its own opener, `WA_STUDENT` in `main.js`). Never a personal number. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון, לשותפים ולסטודנטים. לא מספר אישי. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
 | `SEATS` | Places for participants only; the four managers are not counted. Shown as "15 מקומות". A number only: the page adds the word, so anything else is a "לבדוק את הערך" chip. | מספר המקומות למשתתפים בלבד, בלי המנהלים. מספר בלבד, המילה "מקומות" נוספת לבד. | a number |
-| `DEADLINE` | Last day to apply (hero, FAQ, the terminal's caption). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. As `day.month` it also gives the panel its save-the-date, a calendar file made in the browser, offered only when this year's date is today or later and at most 180 days away on the visitor's own clock; after the deadline, or in words, that action is absent. | התאריך האחרון להרשמה. בפורמט יום.חודש הוא נותן גם את "שמרו את התאריך ביומן", רק כשהתאריך השנה עוד לפנינו ובתוך 180 יום. | day.month, e.g. `27.10` |
+| `DEADLINE` | Last day to apply (hero, FAQ, the terminal's caption). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. As `day.month` it also gives the panel its save-the-date, a calendar file made in the browser, offered only when this year's date is today or later and at most 180 days away on the visitor's own clock; after the deadline, or in words, that action is absent. | התאריך האחרון להרשמה. בפורמט יום.חודש הוא נותן גם את "שמרו את ה־27.10 ביומן" בפאנל, רק כשהתאריך השנה עוד לפנינו ובתוך 180 יום. | day.month, e.g. `27.10` |
 | `ANSWER_DATE` | When applicants hear back (FAQ). Same handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
 | `MEETING_DAY_TIME` | Weekly meeting day and time (hero facts and FAQ). | יום ושעת המפגש השבועי. | day and time |
 | `BACKING_TEXT` | The backing line under the logo, in the wording the student union approves. Filling it also shows `REICHMAN_LOGO` above it. | שורת הגיבוי מתחת ללוגו, בנוסח שהאגודה מאשרת. מילוי השורה מציג גם את לוגו האוניברסיטה. | free text |
@@ -53,7 +53,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `GOATCOUNTER_CODE` | Site code from goatcounter.com (no cookies, no consent banner). Until it is set, no counter script loads. | הקוד מ־goatcounter.com. עד שממלאים, אין מונה. | the code only, not the full URL |
 | `SPEAKERS[]` | Speakers who confirmed in writing: `{ name, role, org, photo }`. Empty shows "שמות האורחים יתפרסמו אחרי שיאשרו.". | מרצים שאישרו בכתב. | array |
 | `PARTNERS[]` | Partner organisations that confirmed in writing: `{ name, url }`. | ארגונים שאישרו בכתב. | array |
-| `TEAM[]` | The four managers, in card order: `{ name, role, bio, photo }` (`bio` replaced the old `line`). Each manager fills and confirms their own name, role and bio, in the first person. **Keep each entry on one physical line** (a `\n` inside `bio` starts a new line on the card): the gate's one exception is keyed to a whole line. A blank bio shows a "למילוי · ביוגרפיה" chip and no disclosure; without a photo the card shows initials. Never an AI face for a real person. | ארבעת המנהלים: שם, תפקיד, ביוגרפיה, תמונה. כל רשומה בשורה אחת. | array |
+| `TEAM[]` | The four managers, in card order: `{ name, role, bio, photo }` (`bio` replaced the old `line`). Each manager fills and confirms their own name, role and bio, in the first person. **Keep each entry on one physical line** (a `\n` inside `bio` starts a new line on the card): the gate's one exception is keyed to a whole line. A blank bio shows a "למילוי · ביוגרפיה" chip and no disclosure; without a photo the card shows initials. Never an AI face for a real person. | ארבעת המנהלים: שם, תפקיד, ביוגרפיה, תמונה. כל מנהל ומנהלת ממלאים ומאשרים את הרשומה שלהם, בגוף ראשון. כל רשומה בשורה אחת. | array |
 | `FAQ[]` | `{ q, a }`. `{KEY}` inside `a` is replaced by that value, or by its chip. Anything undecided goes in a key, never as plain text in `a`. | שאלות ותשובות. מה שלא הוחלט נכנס כמפתח, לא כטקסט. | array |
 
 ## Team photos
@@ -66,11 +66,13 @@ The page has four moments and nothing else moves. **S1** the ring in "איך ז�
 
 Rules the code keeps: every scroll-linked motion animates `transform` or `opacity` only; copy never scrubs (text appears by one-shot reveals that only add); nothing is pinned, sticky or viewport-height-sized on phones (the ring's `sticky`, with its `50vh`, is for 900 px and up); the base style of every animated element is its finished state, so a page without JavaScript, with reduced motion, or in an engine without scroll timelines is the same finished page.
 
+**Loading, for the first paint (LCP).** The step pictures' wells have `content-visibility: auto`: each picture is laid out, and so fetched, as its frame comes near the screen (about 1,100 px ahead on a phone), never with the first screen, so the logo mark paints sooner. A well's size comes from its `aspect-ratio`, so nothing shifts when the picture arrives. Keep both, or the pictures load with the first screen again.
+
 **Motion switches**, one attribute each in `index.html`:
 
 | Switch | Values | What it does |
 |---|---|---|
-| `data-ring` on `.ring-wrap` | `once` (set), `scroll`, `off` | `once` closes the arcs in one move as the ring arrives (the hand turns once, the readout counts to 360°). `scroll` draws the arcs with the thumb on phones; it failed the 8 ms gate (below), so it is not used. `off` shows the closed ring, nothing moves. |
+| `data-ring` on `.ring-wrap` | `once` (set), `scroll`, `off` | `once` closes the arcs in one move as the ring arrives (the hand turns once, the readout counts to 360°). `scroll` draws the arcs with the thumb on phones; it failed the 8 ms gate (below), so it is not used. `off` shows the closed ring, nothing moves. A missing or unknown value reads as `once`; only an explicit `scroll` takes the thumb-linked path. |
 | `data-drift` on `.steps` | `on` (set), `off` | The pictures' drift inside the frames. |
 | `data-puck` on `#term` | `on` (set), `off` | `off` shows a plain button instead of the slider (the three verbs as a caption above it); a tap still turns the card. |
 
@@ -80,10 +82,10 @@ Rules the code keeps: every scroll-linked motion animates `transform` or `opacit
 
 | # | Element | Trigger | Property | Duration, easing | Compositor | Fallback | RM |
 |---|---|---|---|---|---|---|---|
-| H1 | mark, wordmark rise | load | opacity, transform | 450 ms | yes | same | static |
+| H1 | the mark settles; wordmark and tagline rise | load | the mark: transform only, so it is on screen, and counted as the page's largest paint, from the first frame; wordmark and tagline: opacity, transform | 450 ms | yes | same | static |
 | H2 | wire, hero segment | load +500 ms | scaleY 0 to 1 | 500 ms | yes | same | drawn |
 | W1 | wire, one segment per section | the segment's own view timeline through a 1 px window at 72% of the screen, so each fills 1:1 and the next starts where it ends | scaleY 0 to 1 | scrubbed | yes | once per section, 600 ms | drawn |
-| R1 | ring arcs | `once`: the ring half in view | stroke-dashoffset 1 to 0, staggered 120 ms | 350 ms each | no, paint (once) | same | closed |
+| R1 | ring arcs | `once`: the whole ring above the 85% line (half of it, on a screen too short for the whole) | stroke-dashoffset 1 to 0, 120 ms apart | 350 ms each | no, paint (once) | same | closed |
 | R2 | tick hand | with R1; wide: one step per section read | rotate | 700 ms linear; wide 350 ms | yes | same | at rest |
 | R3 | degree readout | with R1: 12 writes through the turn; wide: 0, 120, 240, 360 | text | event-driven | tiny | same | 360° |
 | N1 | a frame locks on | 60% of the frame in view, once | ticks move 4 px outward; the picture's tint 0.55 to 0; the hairline brightens | 300, 400, 250 ms | ticks and tint yes | same | locked |
@@ -156,8 +158,9 @@ Then by hand: open the page and search for **לבדוק**. It must find nothing.
    - A GoatCounter account.
 2. `gh auth status` shows `amitfidel` active, then `gh repo create amitfidel/frontline --public --source=. --push`.
 3. GitHub, Settings, Pages: deploy from branch `main`, folder `/ (root)`. The site appears at `https://amitfidel.github.io/frontline/`.
-4. Fill `config.js`, `SIGNUP_URL` last. Run `sh gate.sh`. Commit, push.
+4. Fill `config.js`, `SIGNUP_URL` last. Run `sh gate.sh`. Commit, push. The same day SIGNUP_URL goes live: post the form on Instagram, and answer every WhatsApp message that mentions FRONTLINE (search the chat for the word).
 5. Live checks: paste the link into a WhatsApp chat to yourself and check the card, open GoatCounter, run Lighthouse on the live URL. On a phone, inside the Instagram browser: slide the puck the whole way, then scroll with a thumb that starts on the track; tap "שמרו את ה־27.10 ביומן" (it works in Safari and Chrome proper; some in-app browsers ignore calendar files).
+6. The day after DEADLINE: move DEADLINE and ANSWER_DATE to the next cohort, or take the page down.
 
 Working from a fresh clone? The commit identity is set per folder, so set it before the first commit there (the gate fails until you do):
 
@@ -198,7 +201,7 @@ Rust is never used on a board (2.1:1 there).
 
 **Type.** Display: Karantina 700, a condensed Hebrew poster face, used only for section heads, the closing line and the partner block title. Everything else: IBM Plex Sans Hebrew 400/700, whose Latin also sets the `FRONTLINE` wordmark (tracked +0.05em, to echo the logo). A utility voice, Plex 400 at 0.75rem, tracked +0.12em, tabular figures, sets the frame tags, the terminal's caption and the stops. No serif display: cream and copper with a serif is the look every generic page lands on.
 
-**Space.** 4, 8, 12, 16, 24, 32, 48, 72, 112 px (`--s-1` to `--s-9`). Content measure 36rem. Boards get `--s-8` above and below on phones, `--s-9` from 900 px.
+**Space.** 4, 8, 12, 16, 24, 32, 48, 72, 112 px (`--s-1` to `--s-9`). Content measure 36rem. Boards get `--s-8` above and below on phones, `--s-9` from 900 px. `--calm` (53rem, one 390 x 844 phone screen and a little) is the calm band of board between the ring and the first frame on phones, so two moments never share a phone screen.
 
 **Light only, by design.** The club's look is copper on cream, matching the logo, with two umber boards inside it; there is no dark variant, and `color-scheme: only light` asks browsers not to auto-darken it.
 

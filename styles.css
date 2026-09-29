@@ -56,6 +56,8 @@
   /* space */
   --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
   --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 7rem;
+  --calm: 53rem;         /* one 390 x 844 phone screen and a little: between the ring and the
+                            first frame, so two moments never share a phone screen */
   --gutter: clamp(1.25rem, 5vw, 3rem);
   --wide: 72rem;
   --measure: 36rem;
@@ -275,7 +277,9 @@ h2.display::after {
 }
 
 /* ---- how it works: S1, the ring ------------------------------------------------ */
-.how-grid { display: grid; gap: var(--s-7); margin-block-start: var(--s-7); }
+/* on phones the ring and the frames stack: a calm band of board (the grid and the wire only)
+   lies between them; from 900 px they sit side by side in one row, so the band is not used */
+.how-grid { display: grid; row-gap: var(--calm); column-gap: var(--s-7); margin-block-start: var(--s-7); }
 .ring-wrap { position: relative; justify-self: center; inline-size: min(100%, 18.75rem); }
 .ring { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
 .ring .track { fill: none; stroke: rgb(232 137 90 / 0.2); stroke-width: 1.5; }
@@ -328,7 +332,9 @@ h2.display::after {
 .frame { --tk-out: -1px; --tk-arm: 1rem; --tk-w: 2px; --tk-c: var(--copper-glow); }
 .frame-strip { display: flex; align-items: baseline; gap: var(--s-3); margin-block-end: var(--s-3); font: 700 var(--t-h3) / 1.3 var(--f-body); color: var(--sand); }
 .tag { font: 400 var(--t-util) / 1 var(--f-body); letter-spacing: 0.12em; font-variant-numeric: tabular-nums; color: var(--mute); }
-.frame-pic { position: relative; overflow: clip; aspect-ratio: 4 / 3; background: var(--board-2); }
+/* content-visibility: the picture is laid out, and so fetched, only near the screen, never in
+   the first frame's layout; the well's size comes from aspect-ratio, so nothing can shift */
+.frame-pic { position: relative; overflow: clip; aspect-ratio: 4 / 3; background: var(--board-2); content-visibility: auto; }
 .frame-pic img { inline-size: 100%; block-size: 100%; object-fit: cover; }
 .frame-pic::after { content: ""; position: absolute; inset: 0; background: var(--board); opacity: 0; pointer-events: none; }
 .step .verb { color: var(--rust); }
@@ -454,6 +460,7 @@ h2.display::after {
 .faq-list details[open] summary::after { transform: rotate(45deg); }
 .faq-list summary:hover { color: var(--rust); }
 .answer { padding-block-end: var(--s-5); max-inline-size: var(--measure); }
+.nowrap { white-space: nowrap; }
 
 /* ---- S4, the terminal ------------------------------------------------------------------ */
 .terminal h2 { grid-area: 1 / 1; }
@@ -610,7 +617,8 @@ h2.display::after {
 /* =========================================================================================
    MOTION. Row names (H1, W1, R1 ...) are the rows of the motion table in README.md.
    ========================================================================================= */
-@keyframes rise { from { opacity: 0; transform: translateY(0.5rem) scale(0.985); } }   /* H1 */
+@keyframes rise { from { opacity: 0; transform: translateY(0.5rem) scale(0.985); } }   /* H1, wordmark and tagline */
+@keyframes settle { from { transform: translateY(0.5rem) scale(0.985); } }              /* H1, the mark */
 @keyframes wire-fill { from { transform: scaleY(0); } }                                 /* H2, W1 */
 @keyframes hand-turn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } /* R2 */
 /* R1: each arc draws while the hand crosses it (arcs span 6-114, 126-234, 246-354 degrees) */
@@ -624,8 +632,9 @@ h2.display::after {
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 
-  /* H1 logo reveal: the mark, then the wordmark, 600 ms end to end */
-  .mark { animation: rise 0.45s var(--ease) both; }
+  /* H1 logo reveal: the mark, then the wordmark, 600 ms end to end. The mark only settles
+     (no fade): it is on screen from the first frame, the page's largest paint. */
+  .mark { animation: settle 0.45s var(--ease) both; }
   .wordmark, .tagline { animation: rise 0.45s 0.15s var(--ease) both; }
 
   /* H2 the wire powers on under the button */
@@ -642,7 +651,8 @@ h2.display::after {
 
   /* R1 one-shot arcs: the fallback on phones, data-ring="once", and the wide sticky ring,
      which closes arc by arc as each step is read */
-  .js .ring-wrap:not([data-ring="off"]) .arc { transition: stroke-dashoffset 0.35s var(--ease); }
+  /* longhands, not the shorthand: the shorthand resets the delay and outranks the stagger below */
+  .js .ring-wrap:not([data-ring="off"]) .arc { transition-property: stroke-dashoffset; transition-duration: 0.35s; transition-timing-function: var(--ease); }
   .js .ring-wrap:not([data-ring="off"]) .ring[data-step="0"] .arc-1,
   .js .ring-wrap:not([data-ring="off"]) .ring:is([data-step="0"], [data-step="1"]) .arc-2,
   .js .ring-wrap:not([data-ring="off"]) .ring:not([data-step="3"]) .arc-3 { stroke-dashoffset: 1; }
