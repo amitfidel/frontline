@@ -192,6 +192,20 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .hero button.btn.is-soon[aria-expanded="true"]::after { transform: rotate(45deg); }
 .cta-row .btn { inline-size: min(100%, 22rem); }
 .text-link { display: inline-flex; align-items: center; min-block-size: 2.75rem; font-weight: 700; }
+/* The first screen on a phone. The backing line and the Owner's lead made the hero about 120 px
+   taller, so below 900 px its rhythm is one spacing step tighter and the mark smaller: the
+   sign-up button and the partner link stay inside an in-app browser (about 700 px tall), and
+   the board with its kicker still ends the first screen at 390 x 844. */
+@media (max-width: 899.98px) {
+  .hero { --pad-end: var(--s-6); padding-block-start: var(--s-5); }
+  .mark { inline-size: clamp(112px, 30vw, 220px); margin-block-end: var(--s-3); }
+  .tagline { margin-block-start: var(--s-2); }
+  .backing.has-logo { margin-block-start: var(--s-4); line-height: 1.45; }
+  .backing-logo { block-size: 2.5rem; }
+  .lead { margin-block-start: var(--s-4); line-height: 1.5; }
+  .facts { row-gap: var(--s-1); margin-block-start: var(--s-4); padding-block: var(--s-2); }
+  .cta-row { margin-block-start: var(--s-4); }
+}
 
 /* ---- the hero's soon panel, and the actions both panels share (main.js builds them) ---- */
 .soon-panel { display: grid; grid-template-rows: 0fr; inline-size: min(100%, 22rem); margin-block-start: calc(var(--s-2) * -1); } /* closed, it takes no gap */
