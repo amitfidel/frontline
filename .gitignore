@@ -3,6 +3,9 @@ qa/*.json
 
 # The publish gate's private word list (see gate.sh). Never committed.
 .gate-private
+# The gate's exact-line exception for config.js (see gate.sh, check 6). It holds
+# a private word by design, so it is never committed either.
+.gate-allow
 
 # scratch
 *.tmp
