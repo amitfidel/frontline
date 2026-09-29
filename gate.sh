@@ -42,13 +42,18 @@ report() {  # report "<what>" "<findings, empty when clean>"
   fi
 }
 revs=$(git rev-list --all)
+# AT turns grep -n output of config.js into config.js:<line>, never its text:
+# check 6 lets one config.js line hold a private word, so no check may print a
+# config.js line. SEARCH FAILED lines pass through as they are.
+AT='/^SEARCH FAILED/ { print; next } { print "config.js:" $1 }'
 
 # 1. Unfilled markers live only in config.js (README.md documents them).
 report "unfilled markers only in config.js" \
   "$(g git grep --untracked -nIE 'T[O]DO_' -- . ':!config.js' ':!README.md')"
 
 # 2. The retired FAQ draft flag: every undecided answer must be a {KEY} placeholder.
-report "no FAQ item carries a check flag" "$(g grep -nE 'c[h]eck[[:space:]]*:' config.js)"
+report "no FAQ item carries a check flag" \
+  "$(g grep -nE 'c[h]eck[[:space:]]*:' config.js | f env LC_ALL=C awk -F: "$AT")"
 
 # 3. Commits carry only the GitHub noreply identity, and so will the next one.
 NOREPLY='[0-9]+\+a[m]itfidel@users\.noreply\.github\.com'
@@ -74,14 +79,14 @@ report "no local machine paths" "$(
 
 # 6. Private words (employer, internal project names), from the local list: in
 #    the files, every commit, the commit messages, and the author and committer
-#    names. One exception, for config.js only (the Owner's decision): a line that
-#    equals, byte for byte, a line of .gate-allow is not a finding, in the working
-#    tree or in history. A CR at the end of a config.js line is its Windows line
-#    end, not part of the line. .gate-allow must be gitignored like the list, and
-#    every line in it must be the Owner's own team entry, one entry on the line,
-#    with name: "עמית פידל" and bio: " in it. It holds more than one line only
-#    because history keeps older versions of that entry. No .gate-allow means no
-#    exception. Either file is refused, not repaired, when it starts with a BOM or
+#    names. One exception, for config.js only (the site owner's decision): a line
+#    that equals, byte for byte, a line of .gate-allow is not a finding, in the
+#    working tree or in history. A CR at the end of a config.js line is its
+#    Windows line end, not part of the line. .gate-allow must be gitignored like
+#    the list, and every line in it must be one team entry, the one with
+#    name: "עמית פידל", alone on the line and with bio: " in it. It holds more than
+#    one line only because history keeps older versions of that entry. No
+#    .gate-allow means no exception. Either file is refused, not repaired, when it starts with a BOM or
 #    holds a CR byte: both can make a pattern or a line miss without a sound.
 #    Findings name a place (path, path:line, rev:path:line, commit and field),
 #    never the matched text, so a pasted report cannot carry a word. The errors
@@ -116,7 +121,7 @@ if [ -e .gate-allow ] || [ -L .gate-allow ]; then
     why=$(badbytes .gate-allow)
     if [ -n "$why" ]; then
       cannot ".gate-allow $why. Fix: $LISTFIX."
-    # bad = the number of the first line that is not the Owner's own entry
+    # bad = the number of the first line that is not that one entry
     elif ! bad=$(LC_ALL=C awk -v owner="$OWNER" '
         index($0, owner) && index($0, "bio: \"") {
           s = $0
@@ -125,7 +130,7 @@ if [ -e .gate-allow ] || [ -L .gate-allow ]; then
         { print NR; exit }' .gate-allow); then
       cannot ".gate-allow could not be read"
     elif [ -n "$bad" ]; then
-      cannot ".gate-allow line $bad is not the Owner's own team entry (one entry, with $OWNER and bio: \", in UTF-8)"
+      cannot ".gate-allow line $bad is not the one allowed team entry (one entry, with $OWNER and bio: \", in UTF-8)"
     else
       allow=.gate-allow
     fi
@@ -135,7 +140,9 @@ fi
 # line (printing /allowed for the count: git never prints a path that starts
 # with a slash, so no file name can pose as one), and prints the others as
 # their place only. k is the number of fields before the text: 2 in the working
-# tree (path:line:), 3 in history (rev:path:line:).
+# tree (path:line:), 3 in history (rev:path:line:). BINMODE=3 stops awk on
+# Windows from dropping a CR on its own, so the one strip below is the only one,
+# on every system.
 EXEMPT='
 BEGIN {
   if (allow != "") {
@@ -163,9 +170,9 @@ if [ "$run6" -eq 1 ]; then
     g git grep --untracked -l -a -i -E -f .gate-private -- . ':!config.js' 2>/dev/null
     [ -n "$revs" ] && g git grep -l -a -i -E -f .gate-private $revs -- . ':!config.js' 2>/dev/null
     g git -c grep.column=false grep --no-color --untracked -n -a -i -E -f .gate-private -- config.js 2>/dev/null |
-      f env LC_ALL=C awk -v k=2 -v allow="$allow" "$EXEMPT"
+      f env LC_ALL=C awk -v BINMODE=3 -v k=2 -v allow="$allow" "$EXEMPT"
     [ -n "$revs" ] && g git -c grep.column=false grep --no-color -n -a -i -E -f .gate-private $revs -- config.js 2>/dev/null |
-      f env LC_ALL=C awk -v k=3 -v allow="$allow" "$EXEMPT"
+      f env LC_ALL=C awk -v BINMODE=3 -v k=3 -v allow="$allow" "$EXEMPT"
     for c in $revs; do
       if ! m=$(git log -1 --format='%an%n%cn%n%B' "$c" 2>/dev/null); then
         echo "SEARCH FAILED, commit $c could not be read"; break
@@ -198,8 +205,8 @@ fi
 #    as text. Comment lines are skipped. KEYMARK walks each line's quoted strings
 #    and drops a marker only where a quoted value opens with it right after a
 #    key's colon, so one after a colon inside a value ("27.10: '...") is still
-#    named. The last grep keeps a SEARCH FAILED line, so a failed first search
-#    still fails the check.
+#    named. Lines are named as config.js:<line> (see AT). The last grep keeps a
+#    SEARCH FAILED line, so a failed first search still fails the check.
 KEYMARK='
 {
   n = length($0); i = index($0, ":"); o = substr($0, 1, i); i++; q = ""; key = 0
@@ -224,8 +231,8 @@ KEYMARK='
 FULLWIDTH=$(printf '\357\274[\201-\277]|\357\275[\200-\236]')  # U+FF01-FF5E as UTF-8 bytes
 report "unfilled markers in config.js open their value, spelled one way" "$(
   g grep -nvE '^[[:space:]]*(/?\*|//)' config.js | f env LC_ALL=C awk "$KEYMARK" |
-    g grep -iE 't[o]do|^SEARCH FAILED'
-  g env LC_ALL=C grep -nE "$FULLWIDTH" config.js)"
+    g grep -iE 't[o]do|^SEARCH FAILED' | f env LC_ALL=C awk -F: "$AT"
+  g env LC_ALL=C grep -nE "$FULLWIDTH" config.js | f env LC_ALL=C awk -F: "$AT")"
 
 echo
 echo "By hand: open the page and search for \"לבדוק\". It must find nothing."

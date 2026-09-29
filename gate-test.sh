@@ -128,6 +128,10 @@ printf '%s\n' "$L1" >> "$site/index.html"
 expect "E3 E1 plus the same line in index.html: FAIL, names index.html only" 1 "FAIL  no private words" \
   "=      index.html" "!      config.js" "!$w"
 git -C "$site" checkout -q -- index.html
+printf '%s\n' "$L1" > "$site/qa/config.js"
+expect "E3 the same line in another file named config.js (qa/config.js): FAIL, names it only" 1 \
+  "FAIL  no private words" "=      qa/config.js" "!      config.js" "!$w"
+rm "$site/qa/config.js"
 printf '    { name: "x", role: "x", bio: "%s", photo: "" },\n' "$w" >> "$site/config.js"; n2=$(last)
 expect "E4 E1 plus the word on another member's config.js line: FAIL, names that line only" 1 \
   "FAIL  no private words" "=      config.js:$n2" "!      config.js:$n1" "!$w"
@@ -139,6 +143,17 @@ printf '%s\n' "$L1" > "$site/.gate-allow"
 entry "$L1" ' '
 expect "E5 the config.js line one trailing space longer: FAIL" 1 "FAIL  no private words" \
   "=      config.js:$n1" "!$w"
+# Checks 2 and 7 print config.js lines by number only, since the allowed line holds the word.
+L3=$(owner "three years at $w$(printf '\357\274\214') then a founder")   # a fullwidth comma
+entry "$L3"
+printf '%s\n' "$L3" > "$site/.gate-allow"
+expect "E11 the allowed line with a fullwidth comma: check 7 FAIL by line number, never the word" 1 \
+  "FAIL  unfilled markers in config.js" "=      config.js:$n1" "+ok    no private words" "!$w"
+L4=$(owner "three years at $w, check: yes")
+entry "$L4"
+printf '%s\n' "$L4" > "$site/.gate-allow"
+expect "E11 the allowed line holding a check flag: check 2 FAIL by line number, never the word" 1 \
+  "FAIL  no FAQ item carries a check flag" "=      config.js:$n1" "+ok    no private words" "!$w"
 
 fresh
 entry "$L1"
