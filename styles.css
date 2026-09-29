@@ -301,6 +301,23 @@ h2.display::after {
 .ring:not(.is-all)[data-step="3"] .lbl-3 { fill: var(--copper-glow); }
 .ring .deg { font: 700 42px var(--f-body); font-variant-numeric: tabular-nums; fill: var(--copper-glow); text-anchor: middle; direction: ltr; unicode-bidi: isolate; }
 .js .ring-wrap:not(.is-full) .deg { fill: var(--sand); }
+/* The phone reveal (main.js builds it; shown only in data-ring="scroll" on phones, see MOTION).
+   Each half of the ring box is a static clip; inside it a half-plane clip turns on the ring's
+   centre over a full-size upright copy of the arcs. Physical left and right on purpose: the
+   angles are physical, clockwise from the top. The clips paint nothing themselves, so they are
+   visibility: hidden: Chrome then neither repaints them nor counts a turning clip as a layout
+   shift (it did, CLS 0.03). Only the copies, which never move on screen, are visible. */
+.reveal { display: none; position: absolute; inset: 0; pointer-events: none; }
+.reveal span { position: absolute; }
+.reveal .half { top: 0; width: 50%; height: 100%; overflow: hidden; visibility: hidden; }
+.reveal .half-a { left: 50%; }
+.reveal .half-b { left: 0; }
+.reveal .sweep { top: 0; width: 100%; height: 100%; overflow: hidden; transform-origin: 0 50%; visibility: hidden; }
+.reveal .half-a .sweep { left: 0; }
+.reveal .half-b .sweep { left: 100%; }
+.reveal .copy { top: 0; left: -100%; width: 200%; height: 100%; visibility: visible; }
+.reveal svg { display: block; width: 100%; height: 100%; }
+.reveal path { fill: none; stroke: url(#ring-grad); stroke-width: 14; }
 /* the tick hand: an HTML bar over the SVG so its turn stays on the compositor. It runs from
    the tick down to the ring's centre and pivots there, so no angle can push it outside the
    ring (a turned full-size layer would widen an RTL page). At rest the tick stands in the
@@ -632,10 +649,13 @@ h2.display::after {
 @keyframes settle { from { transform: translateY(0.5rem) scale(0.985); } }              /* H1, the mark */
 @keyframes wire-fill { from { transform: scaleY(0); } }                                 /* H2, W1 */
 @keyframes hand-turn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } /* R2 */
-/* R1: each arc draws while the hand crosses it (arcs span 6-114, 126-234, 246-354 degrees) */
-@keyframes arc-1 { 0%, 1.667% { stroke-dashoffset: 1; } 31.667%, 100% { stroke-dashoffset: 0; } }
-@keyframes arc-2 { 0%, 35% { stroke-dashoffset: 1; } 65%, 100% { stroke-dashoffset: 0; } }
-@keyframes arc-3 { 0%, 68.333% { stroke-dashoffset: 1; } 98.333%, 100% { stroke-dashoffset: 0; } }
+/* R1 on phones: the edge of the revealed sector turns with the hand, 0 to 360 degrees. The
+   right half's clip turns in during the first half of the travel, the left half's in the
+   second; each copy of the arcs turns the other way, so the arcs themselves never move. */
+@keyframes sweep-a { from { transform: rotate(-180deg); } 50%, to { transform: rotate(0deg); } } /* R1 */
+@keyframes copy-a { from { transform: rotate(180deg); } 50%, to { transform: rotate(0deg); } }   /* R1 */
+@keyframes sweep-b { from, 50% { transform: rotate(0deg); } to { transform: rotate(180deg); } }  /* R1 */
+@keyframes copy-b { from, 50% { transform: rotate(0deg); } to { transform: rotate(-180deg); } }  /* R1 */
 @keyframes drift { from { transform: translateY(4%) scale(1.08); } }                    /* N2 */
 @keyframes arm-ring { from { transform: scale(1); opacity: 0.6; } to { transform: scale(1.6); opacity: 0; } } /* E1 */
 @keyframes nudge { 0%, 100% { translate: 0; } 45% { translate: calc(6px * var(--dir)) 0; } }                  /* E2 */
@@ -754,20 +774,25 @@ h2.display::after {
       animation-timeline: view();
     }
   }
-  /* R1, R2 on phones: the ring draws while it travels up the lower part of the screen;
-     the readout (R3, main.js) watches the same travel with the same 15% inset */
+  /* R1, R2 on phones: the ring draws while it travels up the lower part of the screen, with
+     transforms only: the painted arcs step aside for the reveal (main.js builds it), whose clips
+     and copies turn with the hand. The readout (R3, main.js) watches the same travel with the
+     same 15% inset. */
   @media (prefers-reduced-motion: no-preference) and (max-width: 899.98px) {
     .st .ring-wrap[data-ring="scroll"] { view-timeline-name: --ring; view-timeline-axis: block; view-timeline-inset: 0% 15%; }
-    .st .ring-wrap[data-ring="scroll"] :is(.arc, .hand) {
+    .st .ring-wrap[data-ring="scroll"] .ring .arc { visibility: hidden; }
+    .st .ring-wrap[data-ring="scroll"] .reveal { display: block; }
+    .st .ring-wrap[data-ring="scroll"] :is(.sweep, .copy, .hand) {
       animation-duration: auto;
       animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: --ring;
       animation-range: entry 0% entry 100%;
     }
-    .st .ring-wrap[data-ring="scroll"] .arc-1 { animation-name: arc-1; }
-    .st .ring-wrap[data-ring="scroll"] .arc-2 { animation-name: arc-2; }
-    .st .ring-wrap[data-ring="scroll"] .arc-3 { animation-name: arc-3; }
+    .st .ring-wrap[data-ring="scroll"] .sweep-a { animation-name: sweep-a; }
+    .st .ring-wrap[data-ring="scroll"] .copy-a { animation-name: copy-a; }
+    .st .ring-wrap[data-ring="scroll"] .sweep-b { animation-name: sweep-b; }
+    .st .ring-wrap[data-ring="scroll"] .copy-b { animation-name: copy-b; }
     .st .ring-wrap[data-ring="scroll"] .hand { animation-name: hand-turn; }
   }
 }

@@ -658,17 +658,19 @@
   once([term], (t) => t.classList.add("is-armed"), { threshold: 0.8 });                                  // E1, E2
   if (!st) once(doc.querySelectorAll(".section"), (s) => s.classList.add("is-wired"), { rootMargin: "0px 0px -28% 0px" }); // W1
 
-  // The ring (S1). Phones with scroll timelines: the CSS draws it with the thumb and the
-  // readout (R3) counts the same travel through 13 observer thresholds, no per-frame work.
-  // Phones without: today's one-shot close, one turn of the hand, the readout counting
-  // through it. Wide screens: the sticky ring closes arc by arc as each step is read.
+  // The ring (S1). Phones with scroll timelines: the CSS draws it with the thumb, by turning
+  // clips over copies of the arcs (transforms only; the arcs are painted once), and the
+  // readout (R3) counts the same travel through 13 observer thresholds. Phones without:
+  // today's one-shot close, one turn of the hand, the readout counting through it. Wide
+  // screens: the sticky ring closes arc by arc as each step is read.
   const ringWrap = doc.querySelector(".ring-wrap");
   const ring = ringWrap && ringWrap.querySelector(".ring");
   const deg = ring && ring.querySelector(".deg");
   if (!ring || !deg) return;
   const wide = matchMedia("(min-width: 900px)");
-  // Only an explicit data-ring="scroll" takes the thumb-linked path, which failed its gate;
-  // a missing or unknown value reads as "once", the shipped mode, as the CSS reads it too.
+  // The page ships data-ring="scroll". A missing or unknown value reads as "once", the
+  // one-shot that works everywhere, as the CSS reads it too; only an explicit "scroll" takes
+  // the thumb-linked path.
   const ringMode = ["scroll", "off"].includes(ringWrap.dataset.ring) ? ringWrap.dataset.ring : "once";
   const show = (d) => { deg.textContent = `${d}°`; ringWrap.classList.toggle("is-full", d === 360); };
   const close = () => { ring.classList.add("is-all"); ring.dataset.step = "3"; show(360); };
@@ -686,7 +688,32 @@
   if (wide.matches) { show(0); return; }
   if (st && ringMode === "scroll") {
     ring.classList.add("is-all");
-    ring.dataset.step = "3"; // the closed ring is the base; the scroll animation draws over it
+    ring.dataset.step = "3"; // the closed ring is the base; the reveal draws over it
+    // The reveal: per half of the ring, a static clip, a turning clip inside it, and inside that
+    // an upright copy of the three arcs (their own path data, so there is one source). It goes
+    // first in the figure, so the hand still paints over it and ".ring + .hand" still matches.
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const paths = [...ring.querySelectorAll(".arc")].map((a) => a.getAttribute("d"));
+    const reveal = make("span", "reveal");
+    reveal.setAttribute("aria-hidden", "true");
+    for (const side of ["a", "b"]) {
+      const half = make("span", `half half-${side}`);
+      const sweep = make("span", `sweep sweep-${side}`);
+      const copy = make("span", `copy copy-${side}`);
+      const svg = doc.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("viewBox", "0 0 320 320");
+      svg.setAttribute("focusable", "false");
+      for (const d of paths) {
+        const path = doc.createElementNS(SVG_NS, "path");
+        path.setAttribute("d", d);
+        svg.append(path);
+      }
+      copy.append(svg);
+      sweep.append(copy);
+      half.append(sweep);
+      reveal.append(half);
+    }
+    ringWrap.prepend(reveal);
     // The reading is the share of the ring above the 85% line (the CSS travel), in 30 degree
     // steps. It comes from the observers' own rects, so nothing is measured per frame. The
     // second observer only notices jumps (a tap to the top) that cross no threshold.

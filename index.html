@@ -68,11 +68,12 @@
       <h2 class="display" id="how-h">פוגשים מנכ״ל בקמפוס, ואז נכנסים לעבוד בתוך ארגון.</h2>
 
       <div class="how-grid">
-        <!-- S1. data-ring: "once" closes the arcs in one move as the ring arrives (today's arcs,
-             with one turn of the hand and the readout counting to 360). "scroll" draws them with
-             the thumb on phones; it failed the 8 ms paint gate at 4x throttle (README, Motion),
-             so it is off. "off" shows the closed ring and nothing moves. -->
-        <figure class="ring-wrap" aria-hidden="true" data-ring="once">
+        <!-- S1. data-ring: "scroll" (set) draws the ring with the thumb on phones, by turning clips
+             over copies of the arcs, transforms only (README, Motion). "once"
+             closes the arcs in one move as the ring arrives, with one turn of the hand and the
+             readout counting to 360. "off" shows the closed ring and nothing moves. Wide screens
+             always step the sticky ring with the text. -->
+        <figure class="ring-wrap" aria-hidden="true" data-ring="scroll">
           <svg class="ring" viewBox="0 0 320 320" data-step="0">
             <defs>
               <linearGradient id="ring-grad" gradientUnits="userSpaceOnUse" x1="40" y1="290" x2="280" y2="30">
