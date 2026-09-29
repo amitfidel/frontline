@@ -88,7 +88,7 @@ Rules the code keeps: every scroll-linked motion animates `transform` or `opacit
 | R1 | ring arcs | `once`: the whole ring above the 85% line (half of it, on a screen too short for the whole) | stroke-dashoffset 1 to 0, 120 ms apart | 350 ms each | no, paint (once) | same | closed |
 | R2 | tick hand | with R1; wide: one step per section read | rotate | 700 ms linear; wide 350 ms | yes | same | at rest |
 | R3 | degree readout | with R1: 12 writes through the turn; wide: 0, 120, 240, 360 | text | event-driven | tiny | same | 360° |
-| N1 | a frame locks on | 60% of the frame in view, once | ticks move 4 px outward; the picture's tint 0.55 to 0; the hairline brightens | 300, 400, 250 ms | ticks and tint yes | same | locked |
+| N1 | a frame locks on | 60% of the frame in view, or the frame filling 60% of a screen too short for that (a phone held sideways); once. A frame scrolled past, however fast, locks too | ticks move 4 px outward; the picture's tint 0.55 to 0; the hairline brightens | 300, 400, 250 ms | ticks and tint yes | same | locked |
 | N2 | picture drifts in its frame | the picture's view timeline | translateY 4% to 0, scale 1.08 to 1 | scrubbed | yes | still | still |
 | N3 | the three angles in frame 2 | the line fully in view, once | opacity, 8 px from inline-start | 250 ms, 80 ms apart | yes | same | shown |
 | C1 | section reveals, closing line | in view, once | opacity, translateY | 500 ms | yes | same | shown |
@@ -201,7 +201,7 @@ Rust is never used on a board (2.1:1 there).
 
 **Type.** Display: Karantina 700, a condensed Hebrew poster face, used only for section heads, the closing line and the partner block title. Everything else: IBM Plex Sans Hebrew 400/700, whose Latin also sets the `FRONTLINE` wordmark (tracked +0.05em, to echo the logo). A utility voice, Plex 400 at 0.75rem, tracked +0.12em, tabular figures, sets the frame tags, the terminal's caption and the stops. No serif display: cream and copper with a serif is the look every generic page lands on.
 
-**Space.** 4, 8, 12, 16, 24, 32, 48, 72, 112 px (`--s-1` to `--s-9`). Content measure 36rem. Boards get `--s-8` above and below on phones, `--s-9` from 900 px. `--calm` (53rem, one 390 x 844 phone screen and a little) is the calm band of board between the ring and the first frame on phones, so two moments never share a phone screen.
+**Space.** 4, 8, 12, 16, 24, 32, 48, 72, 112 px (`--s-1` to `--s-9`). Content measure 36rem. Boards get `--s-8` above and below on phones, `--s-9` from 900 px. On phones the ring and the first frame sit `--s-7` apart, as the motion brief's layout places them, so the two share a screen: a full screen of empty board between them was tried and read as a broken gap, and the Owner's rule is how the page looks, so the close spacing stands. At a normal scroll the ring's turn and the first frame's lock can play at the same time.
 
 **Light only, by design.** The club's look is copper on cream, matching the logo, with two umber boards inside it; there is no dark variant, and `color-scheme: only light` asks browsers not to auto-darken it.
 

@@ -56,8 +56,6 @@
   /* space */
   --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
   --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 7rem;
-  --calm: 53rem;         /* one 390 x 844 phone screen and a little: between the ring and the
-                            first frame, so two moments never share a phone screen */
   --gutter: clamp(1.25rem, 5vw, 3rem);
   --wide: 72rem;
   --measure: 36rem;
@@ -277,9 +275,7 @@ h2.display::after {
 }
 
 /* ---- how it works: S1, the ring ------------------------------------------------ */
-/* on phones the ring and the frames stack: a calm band of board (the grid and the wire only)
-   lies between them; from 900 px they sit side by side in one row, so the band is not used */
-.how-grid { display: grid; row-gap: var(--calm); column-gap: var(--s-7); margin-block-start: var(--s-7); }
+.how-grid { display: grid; gap: var(--s-7); margin-block-start: var(--s-7); }
 .ring-wrap { position: relative; justify-self: center; inline-size: min(100%, 18.75rem); }
 .ring { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
 .ring .track { fill: none; stroke: rgb(232 137 90 / 0.2); stroke-width: 1.5; }
