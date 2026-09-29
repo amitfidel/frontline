@@ -13,6 +13,7 @@ One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step, 
 | `styles.css` | Design tokens and layout (logical CSS properties only). |
 | `main.js` | Reads `config.js`, fills the page, runs the reveals and the ring. |
 | `gate.sh` | The publish gate. Run it before every push. |
+| `gate-test.sh` | Tests the gate itself on a throwaway clone (a malformed word list must fail, a missing one must not pass). |
 | `assets/fonts/` | Self-hosted woff2 (IBM Plex Sans Hebrew 400/700, Karantina 700) and their OFL licences. |
 | `assets/img/` | The logo mark and the three step images (WebP). |
 | `assets/og.png` | The 1200x630 share card. Source: `og/card.html`. |
@@ -51,7 +52,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `GOATCOUNTER_CODE` | Site code from goatcounter.com (no cookies, no consent banner). Until it is set, no counter script loads. | הקוד מ־goatcounter.com. עד שממלאים, אין מונה. | the code only, not the full URL |
 | `SPEAKERS[]` | Speakers who confirmed in writing: `{ name, role, org, photo }`. Empty shows "שמות האורחים יתפרסמו אחרי שיאשרו.". | מרצים שאישרו בכתב. | array |
 | `PARTNERS[]` | Partner organisations that confirmed in writing: `{ name, url }`. | ארגונים שאישרו בכתב. | array |
-| `TEAM[]` | The four managers: `{ name, role, line, photo }`. Each manager fills and confirms their own name, role and line. Without a photo the card shows initials. Never an AI face for a real person. | ארבעת המנהלים. כל אחד ממלא ומאשר את השם, התפקיד והשורה שלו. | array |
+| `TEAM[]` | The four managers: `{ name, role, line, photo }`. Each manager fills and confirms their own name, role and line. Without a photo the card shows initials. Never an AI face for a real person. | ארבעת המנהלים. כל מנהל ומנהלת ממלאים ומאשרים את השם, התפקיד והשורה שלהם. | array |
 | `FAQ[]` | `{ q, a }`. `{KEY}` inside `a` is replaced by that value, or by its chip. Anything undecided goes in a key, never as plain text in `a`. | שאלות ותשובות. מה שלא הוחלט נכנס כמפתח, לא כטקסט. | array |
 
 ## Publish gate / בדיקה לפני פרסום

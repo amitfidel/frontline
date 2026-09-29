@@ -13,6 +13,15 @@ git rev-parse --git-dir >/dev/null 2>&1 || { echo "COULD NOT CHECK: not a git re
 
 found=0
 unknown=0
+# Every search runs through g. grep exits 0 on a match and 1 on none; anything
+# else (a malformed pattern, a missing file) means the search did not run, so it
+# is printed as a finding and the check FAILS instead of reading as clean.
+g() {
+  "$@"
+  rc=$?
+  [ "$rc" -gt 1 ] && echo "SEARCH FAILED (exit $rc), so this check did not run: $1 $2"
+  return 0
+}
 report() {  # report "<what>" "<findings, empty when clean>"
   if [ -n "$2" ]; then
     echo "FAIL  $1"
@@ -26,15 +35,15 @@ revs=$(git rev-list --all)
 
 # 1. Unfilled markers live only in config.js (README.md documents them).
 report "unfilled markers only in config.js" \
-  "$(git grep --untracked -nIE 'T[O]DO_' -- . ':!config.js' ':!README.md')"
+  "$(g git grep --untracked -nIE 'T[O]DO_' -- . ':!config.js' ':!README.md')"
 
 # 2. The retired FAQ draft flag: every undecided answer must be a {KEY} placeholder.
-report "no FAQ item carries a check flag" "$(grep -nE 'c[h]eck[[:space:]]*:' config.js)"
+report "no FAQ item carries a check flag" "$(g grep -nE 'c[h]eck[[:space:]]*:' config.js)"
 
 # 3. Commits carry only the GitHub noreply identity, and so will the next one.
 NOREPLY='[0-9]+\+a[m]itfidel@users\.noreply\.github\.com'
 report "author and committer are the noreply address" \
-  "$( { git log --all --format='%ae%n%ce'; git config user.email; } | sort -u | grep -vxE "$NOREPLY")"
+  "$( { git log --all --format='%ae%n%ce'; git config user.email; } | sort -u | g grep -vxE "$NOREPLY")"
 
 # 4. The GitHub handle may appear only as the site URL, the repo name, the bare
 #    username or the noreply address. Anything else (a Windows user folder, its
@@ -42,16 +51,16 @@ report "author and committer are the noreply address" \
 TOKEN='[[:alnum:]._:/\\~+@%-]*a[m]itfi[[:alnum:]._:/\\~+@%-]*'
 ALLOWED="a[m]itfidel|a[m]itfidel/frontline|(https://)?a[m]itfidel\.github\.io/frontline/[[:alnum:]._/-]*|$NOREPLY"
 report "the handle appears only in its intended forms" "$(
-  { git grep --untracked -hoiIE "$TOKEN"
-    [ -n "$revs" ] && git grep -hoiIE "$TOKEN" $revs
-    git log --all --format=%B | grep -oiE "$TOKEN"
-  } | sort -u | grep -vxE "$ALLOWED")"
+  { g git grep --untracked -hoiIE "$TOKEN"
+    [ -n "$revs" ] && g git grep -hoiIE "$TOKEN" $revs
+    git log --all --format=%B | g grep -oiE "$TOKEN"
+  } | sort -u | g grep -vxE "$ALLOWED")"
 
 # 5. Local machine paths, in text and binary files, now and in history.
 PATHS='[a-z]:[\\/]+u[s]ers[\\/]|/c/u[s]ers/|a[p]pdata|f[i]le:///|a[m]itfi~[0-9]'
 report "no local machine paths" "$(
-  git grep --untracked -l -a -i -E "$PATHS"
-  [ -n "$revs" ] && git grep -l -a -i -E "$PATHS" $revs)"
+  g git grep --untracked -l -a -i -E "$PATHS"
+  [ -n "$revs" ] && g git grep -l -a -i -E "$PATHS" $revs)"
 
 # 6. Private words (employer, internal project names), from the local list.
 if ! git check-ignore -q .gate-private 2>/dev/null; then
@@ -60,9 +69,9 @@ elif [ ! -s .gate-private ]; then
   echo "COULD NOT CHECK  .gate-private is missing or empty"; unknown=1
 else
   report "no private words in files, history or commit messages" "$(
-    git grep --untracked -l -a -i -E -f .gate-private
-    [ -n "$revs" ] && git grep -l -a -i -E -f .gate-private $revs
-    git log --all --format=%B | grep -niE -f .gate-private)"
+    g git grep --untracked -l -a -i -E -f .gate-private
+    [ -n "$revs" ] && g git grep -l -a -i -E -f .gate-private $revs
+    git log --all --format=%B | g grep -niE -f .gate-private)"
 fi
 
 echo
