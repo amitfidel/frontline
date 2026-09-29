@@ -63,7 +63,10 @@
     console.warn(`FRONTLINE config: ${key} was rejected, check its format in config.js`);
     return chip(null, "לבדוק את הערך");
   };
-  const valueNode = (key) => (blank(C[key]) ? chip(C[key]) : doc.createTextNode(C[key].trim()));
+  // Day.month dates sit in their own LTR run, so RTL can never reorder the digits.
+  const LTR_KEYS = new Set(["DEADLINE", "ANSWER_DATE"]);
+  const valueNode = (key) =>
+    blank(C[key]) ? chip(C[key]) : LTR_KEYS.has(key) ? ltr(C[key].trim()) : doc.createTextNode(C[key].trim());
   const link = (href, content, external) => {
     const a = make("a");
     a.href = href;
@@ -116,15 +119,25 @@
     s.append(make("span", "sr-only", "אינסטגרם"));
     return s;
   });
-  foot("aguda", httpUrl(C.AGUDA_URL), () => {
-    if (blank(C.AGUDA_LOGO)) return doc.createTextNode("אגודת הסטודנטים");
-    const img = make("img", "aguda-logo");
-    img.src = C.AGUDA_LOGO.trim();
-    img.alt = "אגודת הסטודנטים";
-    img.height = 40;
-    img.loading = "lazy";
+  // Logos get their height from the CSS. [w, h] is the shipped file's size: it
+  // reserves the box until the file loads, then the file's own ratio wins.
+  const logo = (src, cls, alt, [w, h], lazy) => {
+    const img = make("img", cls);
+    img.src = src.trim();
+    img.alt = alt;
+    img.width = w;
+    img.height = h;
+    img.decoding = "async";
+    if (lazy) img.loading = "lazy";
     return img;
-  });
+  };
+  const agudaLogo = () => logo(C.AGUDA_LOGO, "aguda-logo", "אגודת הסטודנטים, אוניברסיטת רייכמן", [458, 238], true);
+  const agudaUrl = httpUrl(C.AGUDA_URL);
+  const hasAgudaLogo = !blank(C.AGUDA_LOGO);
+  foot("aguda", agudaUrl, () => (hasAgudaLogo ? agudaLogo() : doc.createTextNode("אגודת הסטודנטים")));
+  // No real AGUDA_URL yet: the logo still shows, as a plain image beside the
+  // chip, never as a dead link.
+  if (!agudaUrl && hasAgudaLogo) doc.querySelector('[data-foot="aguda"]')?.prepend(agudaLogo());
   foot("email", mail && `mailto:${mail}`, () => ltr(mail));
 
   // ---- remaining single values (chips until filled) -------------------------
@@ -133,6 +146,7 @@
     PARTNER_WHATSAPP: (v) => (waDigits(v) ? v.trim() : null),
     INSTAGRAM_URL: httpUrl,
     AGUDA_URL: httpUrl,
+    SEATS: (v) => (/^\d{1,4}$/.test(v.trim()) ? v.trim() : null), // the page adds "מקומות"
   };
   doc.querySelectorAll("[data-cfg]").forEach((n) => {
     const key = n.dataset.cfg;
@@ -140,8 +154,17 @@
     if (blank(v)) { n.replaceWith(chip(v)); return; }
     const out = check[key] ? check[key](v) : v.trim();
     if (!out) { n.replaceWith(badChip(key)); return; }
-    n.replaceWith(n.hasAttribute("data-ltr") ? ltr(out) : doc.createTextNode(out));
+    n.replaceWith(n.hasAttribute("data-ltr") || LTR_KEYS.has(key) ? ltr(out) : doc.createTextNode(out));
   });
+
+  // ---- university logo: only beside a filled backing line --------------------
+  // On its own the logo would claim backing whose wording nobody approved, so it
+  // appears only next to BACKING_TEXT, and never while that is still a chip.
+  const backing = doc.querySelector(".backing");
+  if (backing && !blank(C.BACKING_TEXT) && !blank(C.REICHMAN_LOGO)) {
+    backing.prepend(logo(C.REICHMAN_LOGO, "backing-logo", "אוניברסיטת רייכמן", [382, 234]));
+    backing.classList.add("has-logo");
+  }
 
   // ---- people cards (team, speakers) ----------------------------------------
   const initials = (name) => name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("");

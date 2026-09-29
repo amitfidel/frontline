@@ -11,16 +11,19 @@
 window.FRONTLINE = {
   // Links and contact. Use the club's identity, never a personal number.
   SIGNUP_URL: "TODO_קישור לטופס ההרשמה",        // full https:// link; last thing to fill
-  PARTNER_EMAIL: "TODO_מייל המועדון",           // the club's own address
-  PARTNER_WHATSAPP: "TODO_וואטסאפ של המועדון",  // +972 5X-XXX-XXXX or 05X-XXX-XXXX
-  INSTAGRAM_URL: "TODO_קישור לאינסטגרם",        // full https:// link
+  PARTNER_EMAIL: "Frontline.club26@gmail.com",  // the club's own address
+  PARTNER_WHATSAPP: "+972587716766",            // +972 5X-XXX-XXXX or 05X-XXX-XXXX
+  INSTAGRAM_URL: "https://www.instagram.com/Front_line_club/", // full https:// link
   AGUDA_URL: "TODO_קישור לאגודה",               // full https:// link
-  AGUDA_LOGO: "TODO_קובץ הלוגו של האגודה",       // a file you add, e.g. assets/img/aguda.svg
+  AGUDA_LOGO: "assets/img/aguda.webp",         // shows unlinked until AGUDA_URL is real
+  // The university logo appears only beside BACKING_TEXT, and only once that
+  // line is filled: on its own it would claim backing nobody approved yet.
+  REICHMAN_LOGO: "assets/img/reichman.webp",
 
   // Facts about the cohort.
-  SEATS: "TODO_מספר מקומות",
-  DEADLINE: "TODO_תאריך אחרון",
-  ANSWER_DATE: "TODO_תאריך תשובות",
+  SEATS: "15",                                  // participants only, the managers are not counted
+  DEADLINE: "27.10",                            // day.month
+  ANSWER_DATE: "04.11",                         // day.month
   MEETING_DAY_TIME: "TODO_יום ושעה",
   BACKING_TEXT: "TODO_שורת הגיבוי",               // in the wording the student union approves
 

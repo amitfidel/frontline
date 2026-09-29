@@ -15,7 +15,7 @@ One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step, 
 | `gate.sh` | The publish gate. Run it before every push. |
 | `gate-test.sh` | Tests the gate itself on a throwaway clone (a malformed word list must fail, a missing one must not pass). |
 | `assets/fonts/` | Self-hosted woff2 (IBM Plex Sans Hebrew 400/700, Karantina 700) and their OFL licences. |
-| `assets/img/` | The logo mark and the three step images (WebP). |
+| `assets/img/` | The logo mark, the three step images, and the student union and Reichman University logos (WebP; the two logos have a transparent background, cut from the files they came in, not redrawn). |
 | `assets/og.png` | The 1200x630 share card. Source: `og/card.html`. |
 | `assets/logo-source.jpg` | The original logo file. |
 | `qa/` | Screenshots at 360/390/768/1280 px. Lighthouse JSON is kept locally, not committed. |
@@ -37,18 +37,19 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `SIGNUP_URL` | Sign-up form link. Until it is real, both buttons read "ההרשמה נפתחת בקרוב" and link nowhere. Fill it **last**. | קישור לטופס ההרשמה. עד שהוא אמיתי, הכפתורים כתובים "ההרשמה נפתחת בקרוב" ולא מקשרים לשום מקום. ממלאים אחרון. | `https://...` |
 | `PARTNER_EMAIL` | The club's email, for the partner "מייל" button and the footer. Never a personal address. | המייל של המועדון, לכפתור "מייל" ולתחתית הדף. לא כתובת אישית. | an email address |
 | `PARTNER_WHATSAPP` | The club's WhatsApp number for the "וואטסאפ" button. Never a personal number. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון. לא מספר אישי. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
-| `SEATS` | Number of seats, shown as "מקומות מוגבלים: …". | מספר המקומות. | a number |
-| `DEADLINE` | Last day to apply (hero chip and FAQ). | התאריך האחרון להרשמה. | a date, as you want it read |
-| `ANSWER_DATE` | When applicants hear back (FAQ). | מתי עונים למועמדים. | a date |
+| `SEATS` | Places for participants only; the four managers are not counted. Shown as "15 מקומות". A number only: the page adds the word, so anything else is a "לבדוק את הערך" chip. | מספר המקומות למשתתפים בלבד, בלי המנהלים. מספר בלבד, המילה "מקומות" נוספת לבד. | a number |
+| `DEADLINE` | Last day to apply (hero and FAQ). Kept in its own LTR run, so the digits never reorder. | התאריך האחרון להרשמה. | day.month, e.g. `27.10` |
+| `ANSWER_DATE` | When applicants hear back (FAQ). Same LTR handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
 | `MEETING_DAY_TIME` | Weekly meeting day and time (hero chip and FAQ). | יום ושעת המפגש השבועי. | day and time |
-| `BACKING_TEXT` | The backing line under the logo, in the wording the student union approves. | שורת הגיבוי מתחת ללוגו, בנוסח שהאגודה מאשרת. | free text |
+| `BACKING_TEXT` | The backing line under the logo, in the wording the student union approves. Filling it also shows `REICHMAN_LOGO` above it. | שורת הגיבוי מתחת ללוגו, בנוסח שהאגודה מאשרת. מילוי השורה מציג גם את לוגו האוניברסיטה. | free text |
 | `PARTICIPANT_COST` | FAQ "כמה זה עולה?". A full sentence once decided (if free: `ההשתתפות בחינם.`). | עלות ההשתתפות, משפט שלם. | sentence |
 | `EXPERIENCE_ANSWER` | FAQ "צריך ניסיון ביזמות?". Fill only once the managers agree on the bar and the insurance answer for physical work is in writing. | האם נדרש ניסיון. ממלאים רק אחרי החלטה ואחרי תשובה בכתב על ביטוח. | sentence |
 | `WEEKLY_LOAD` | FAQ "כמה זמן זה לוקח?": the work expected between meetings. | היקף העבודה בין המפגשים. | sentence |
 | `SELECTION_STEP` | FAQ "איך נרשמים?": what happens after the form (if everyone is interviewed: `אחרי זה נקבע איתכם ראיון קצר.`). | שלב המיון אחרי הטופס. | sentence |
 | `INSTAGRAM_URL` | Instagram profile (footer icon). | קישור לאינסטגרם. | `https://...` |
-| `AGUDA_URL` | Student union page (footer). | קישור לאגודת הסטודנטים. | `https://...` |
-| `AGUDA_LOGO` | Union logo file you add to `assets/img/`. Optional: without it the footer shows the words "אגודת הסטודנטים". Do not scrape their logo. | קובץ לוגו האגודה, אם קיבלתם אותו מהם. | `assets/img/aguda.svg` |
+| `AGUDA_URL` | Student union page (footer). Makes the union logo a link. | קישור לאגודת הסטודנטים. הופך את לוגו האגודה לקישור. | `https://...` |
+| `AGUDA_LOGO` | Union logo file in `assets/img/`, first in the footer. It shows as soon as it is set; until `AGUDA_URL` is real it is a plain image beside the "קישור לאגודה" chip, never a dead link. Without a file the footer link reads "אגודת הסטודנטים". Do not scrape their logo. | קובץ לוגו האגודה. מופיע מיד, ועד שיש `AGUDA_URL` אמיתי הוא תמונה בלי קישור. | `assets/img/aguda.webp` |
+| `REICHMAN_LOGO` | Reichman University logo file in `assets/img/`. **It appears only above the backing line, and only once `BACKING_TEXT` is filled.** While `BACKING_TEXT` is still a chip the logo is nowhere on the page, because on its own it would claim official backing in wording the student union has not approved. Do not add it anywhere else on the page. | לוגו אוניברסיטת רייכמן. **מופיע רק מעל שורת הגיבוי, ורק אחרי שממלאים את `BACKING_TEXT`.** עד אז הוא לא מופיע בכלל, כי לבדו הוא רומז על גיבוי רשמי בנוסח שהאגודה עוד לא אישרה. לא מוסיפים אותו לשום מקום אחר בדף. | `assets/img/reichman.webp` |
 | `GOATCOUNTER_CODE` | Site code from goatcounter.com (no cookies, no consent banner). Until it is set, no counter script loads. | הקוד מ־goatcounter.com. עד שממלאים, אין מונה. | the code only, not the full URL |
 | `SPEAKERS[]` | Speakers who confirmed in writing: `{ name, role, org, photo }`. Empty shows "שמות האורחים יתפרסמו אחרי שיאשרו.". | מרצים שאישרו בכתב. | array |
 | `PARTNERS[]` | Partner organisations that confirmed in writing: `{ name, url }`. | ארגונים שאישרו בכתב. | array |
@@ -77,7 +78,7 @@ Then by hand: open the page and search for **לבדוק**. It must find nothing.
 1. Go conditions:
    - At least one field-meeting host date in writing.
    - The insurance answer for physical off-campus work, in writing, before the lines about work clothes and working beside the staff go public.
-   - The union's wording for `BACKING_TEXT`.
+   - The union's wording for `BACKING_TEXT`. It also switches on the university logo, so fill it only with the approved text.
    - The club's own email and WhatsApp number.
    - The FAQ policy keys decided, or deliberately left as chips.
    - A GoatCounter account.

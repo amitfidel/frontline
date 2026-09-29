@@ -31,8 +31,10 @@
 <link rel="preload" href="assets/fonts/plex-700-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plex-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
-<script src="config.js" defer></script>
-<script src="main.js" defer></script>
+<!-- blocking="render": the first paint already shows the filled values, so nothing jumps.
+     Browsers without it paint first and fill a moment later, as before. -->
+<script src="config.js" defer blocking="render"></script>
+<script src="main.js" defer blocking="render"></script>
 </head>
 <body>
 
@@ -46,7 +48,7 @@
     <p class="lead"><span>רואים ארגון חברתי <em>מכל זווית</em>: מההנהלה, מהעובדים ומהשטח.</span> <span>ועוברים <em>את כל הדרך</em>: לומדים, עובדים בשטח, ומקימים משהו משלכם.</span></p>
 
     <ul class="facts" aria-label="פרטי המחזור">
-      <li>מקומות מוגבלים: <span class="todo" data-cfg="SEATS"><b>למילוי</b> · מספר מקומות</span></li>
+      <li><span class="todo" data-cfg="SEATS"><b>למילוי</b> · מספר מקומות</span> מקומות</li>
       <li>הרשמה עד <span class="todo" data-cfg="DEADLINE"><b>למילוי</b> · תאריך אחרון</span></li>
       <li><span class="todo" data-cfg="MEETING_DAY_TIME"><b>למילוי</b> · יום ושעה</span></li>
     </ul>
@@ -159,8 +161,8 @@
 <footer class="foot">
   <div class="wrap foot-inner">
     <ul class="foot-links">
-      <li data-foot="instagram"><span class="todo" data-cfg="INSTAGRAM_URL"><b>למילוי</b> · קישור לאינסטגרם</span></li>
       <li data-foot="aguda"><span class="todo" data-cfg="AGUDA_URL"><b>למילוי</b> · קישור לאגודה</span></li>
+      <li data-foot="instagram"><span class="todo" data-cfg="INSTAGRAM_URL"><b>למילוי</b> · קישור לאינסטגרם</span></li>
       <li data-foot="email"><span class="todo" data-cfg="PARTNER_EMAIL" data-ltr><b>למילוי</b> · מייל המועדון</span></li>
     </ul>
     <p class="copyright" dir="ltr" lang="en">© FRONTLINE 2026</p>

@@ -125,6 +125,9 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
   color: var(--rust);
 }
 .backing { margin-block-start: var(--s-3); font-size: var(--t-sm); color: var(--ink-2); }
+/* The university logo exists on the page only here, beside the filled line (main.js). */
+.backing.has-logo { display: grid; justify-items: center; gap: var(--s-2); margin-block-start: var(--s-5); }
+.backing-logo { block-size: 3rem; inline-size: auto; }
 .lead {
   margin-block-start: var(--s-6);
   max-inline-size: 30ch;
@@ -299,7 +302,9 @@ h2.display::after {
 .foot-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); padding: 0; list-style: none; }
 .foot-links a { display: inline-flex; align-items: center; min-block-size: 2.75rem; }
 .icon-link { display: inline-flex; }
-.aguda-logo { block-size: 2.5rem; inline-size: auto; }
+/* Logos: height from here, width from the file's own ratio (main.js sets the box). */
+[data-foot="aguda"] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
+.aguda-logo { block-size: 4.5rem; inline-size: auto; }
 
 /* ---- scroll reveals (only once main.js runs) -------------------------------------------- */
 .js [data-reveal] { opacity: 0; transform: translateY(0.75rem); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
