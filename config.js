@@ -24,14 +24,14 @@ window.FRONTLINE = {
   SEATS: "15",                                  // participants only, the managers are not counted
   DEADLINE: "27.10",                            // day.month
   ANSWER_DATE: "04.11",                         // day.month
-  MEETING_DAY_TIME: "TODO_יום ושעה",
+  MEETING_DAY_TIME: "ימי שלישי, 17:00 עד 20:00",
   BACKING_TEXT: "TODO_שורת הגיבוי",               // in the wording the student union approves
 
   // Club policy, used inside the FAQ answers. Each is a full sentence once decided.
-  PARTICIPANT_COST: "TODO_עלות ההשתתפות",
-  EXPERIENCE_ANSWER: "TODO_האם נדרש ניסיון",
-  WEEKLY_LOAD: "TODO_היקף העבודה בין המפגשים",
-  SELECTION_STEP: "TODO_שלב המיון",
+  PARTICIPANT_COST: "אין דמי השתתפות.",
+  EXPERIENCE_ANSWER: "עדיפות גבוהה לניסיון בעבודה עם אנשים, ביזמות ובעשייה חברתית.",
+  WEEKLY_LOAD: "היקף העבודה בין המפגשים משתנה משבוע לשבוע.",
+  SELECTION_STEP: "השלב הבא הוא ראיון.",
 
   // Visit counter (goatcounter.com). The site code only, e.g. "frontline".
   GOATCOUNTER_CODE: "TODO_קוד GoatCounter",
@@ -43,14 +43,15 @@ window.FRONTLINE = {
   SPEAKERS: [],
   PARTNERS: [],
 
-  // The four managers. Each fills their own name, role and line. photo is
-  // optional (a file path); without it the card shows the initials.
-  // Never an AI-generated face for a real person.
+  // The four managers, in card order. Each fills and confirms their own name, role
+  // and bio (first person, the whole entry on one line; a \n starts a new line on the
+  // card). photo is optional (a file path; a *-224.webp file also uses its *-336.webp
+  // twin); without it the card shows the initials. Never an AI face for a real person.
   TEAM: [
-    { name: "TODO_שם", role: "TODO_תפקיד", line: "TODO_שורה אחת", photo: "" },
-    { name: "TODO_שם", role: "TODO_תפקיד", line: "TODO_שורה אחת", photo: "" },
-    { name: "TODO_שם", role: "TODO_תפקיד", line: "TODO_שורה אחת", photo: "" },
-    { name: "TODO_שם", role: "TODO_תפקיד", line: "TODO_שורה אחת", photo: "" }
+    { name: "נועה שימרון", role: "שיווק, סושיאל וקהילה", bio: "היי לכולם, אני נועה שימרון. סטודנטית שנה שנייה לתואר כפול בפסיכולוגיה ומנהל עסקים, וביום-יום עובדת כ-HR בחברת Boost. לפני הלימודים עשיתי שנת שירות בעמותת 'קדימה' ושירתתי כקצינת חינוך בשייטת 13. מעבר לזה - אני מאוד אוהבת לבשל, לטייל בארץ ולמצוא פינה יפה לקפה.", photo: "assets/img/team-1-224.webp" },
+    { name: "עמית פידל", role: "קשרי חוץ, מנכ״לים ושותפויות", bio: "היי לכולם, אני עמית פידל, לומד שנה שלישית במדעי המחשב ויזמות בתוכנית המצטיינים, עובד בחברה בשם Sepio cyber וחלק מתוכנית אבירם באוניברסיטה.\nאני מאוד אוהב ספורט, את הים וחיבור של השניים, וכיום מתעסק בהקמת חברה עצמאית.", photo: "assets/img/team-2-224.webp" },
+    { name: "אופק ברוס", role: "תוכן, סילבוס ופרויקטים", bio: "אני אופק ברוס, סטודנט שנה ב׳ לכלכלה ומנהל עסקים בתוכנית מצטיינים.\nבמקור מקריית טבעון, קצין בקבע בדרגת רב-סרן, בתפקידי האחרון מפקד פלגת לוחמים ביחידה מובחרת, כיום פועל להקמת מיזמים חברתיים ומתכונן לתחרות איש ברזל, אוהב את כל סוגי הספורט, לקרוא, לאכול ולטייל.", photo: "assets/img/team-3-224.webp" },
+    { name: "מאיה אברך", role: "כספים, אופרציה וקשר עם האוניברסיטה", bio: "אני מאיה אברך, סטודנטית שנה שנייה לפסיכולוגיה ומנהל עסקים ומאמנת בחמש אצבעות.\nשירתתי כמפקדת בחוות השומר.\nאוהבת אמנות, כל מה שקשור לעשייה בידיים, לטייל בארץ ובעולם, ולקחת וליזום חלק בעשייה חברתית.", photo: "assets/img/team-4-224.webp" }
   ],
 
   // FAQ. {KEY} inside an answer is replaced by that value, or its chip.

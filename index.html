@@ -62,18 +62,20 @@
 
 <main>
 
-  <section class="section how" id="how" aria-labelledby="how-h">
+  <section class="section how board" id="how" aria-labelledby="how-h">
     <div class="wrap">
       <p class="kicker">איך זה עובד</p>
       <h2 class="display" id="how-h">פוגשים מנכ״ל בקמפוס, ואז נכנסים לעבוד בתוך ארגון.</h2>
 
       <div class="how-grid">
-        <figure class="ring-wrap" aria-hidden="true">
+        <!-- S1. data-ring: "scroll" draws the arcs with the thumb on phones, "once" closes
+             them in one move (today's arcs), "off" shows the closed ring and nothing moves. -->
+        <figure class="ring-wrap" aria-hidden="true" data-ring="scroll">
           <svg class="ring" viewBox="0 0 320 320" data-step="0">
             <defs>
               <linearGradient id="ring-grad" gradientUnits="userSpaceOnUse" x1="40" y1="290" x2="280" y2="30">
-                <stop offset="0" stop-color="#8A2724"/>
-                <stop offset="1" stop-color="#C86334"/>
+                <stop offset="0" stop-color="#B74026"/>
+                <stop offset="1" stop-color="#E8895A"/>
               </linearGradient>
             </defs>
             <circle class="track" cx="160" cy="160" r="128"/>
@@ -85,23 +87,31 @@
             <text class="lbl lbl-3" x="92" y="122">מקימים</text>
             <text class="deg" x="160" y="176" direction="ltr">360°</text>
           </svg>
+          <span class="hand"></span>
         </figure>
 
-        <ol class="steps">
-          <li class="step" data-step="1" data-reveal>
-            <img src="assets/img/learn-640.webp" srcset="assets/img/learn-640.webp 640w, assets/img/learn-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="קבוצה יושבת סביב שולחן ארוך בחדר סמינר, ומישהי עומדת בקצה השולחן ומדברת">
-            <h3><span class="verb">לומדים</span> בקמפוס</h3>
+        <!-- S2. data-drift="off" keeps the pictures still inside their frames. -->
+        <ol class="steps" data-drift="on">
+          <li class="step" data-step="1">
+            <div class="frame">
+              <h3 class="frame-strip"><bdi class="tag" dir="ltr" aria-hidden="true">01</bdi><span><span class="verb">לומדים</span> בקמפוס</span></h3>
+              <div class="frame-pic"><img src="assets/img/learn-640.webp" srcset="assets/img/learn-640.webp 640w, assets/img/learn-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="קבוצה יושבת סביב שולחן ארוך בחדר סמינר, ומישהי עומדת בקצה השולחן ומדברת"></div>
+            </div>
             <p>המפגש בקמפוס נפתח ב־45 דקות של מנכ״ל או מנכ״לית שמספרים איך הוקם הארגון שלהם ומה עדיין לא עובד בו, ומשם עוברים לעבודת צוותים באותו חדר על הבעיה עצמה.</p>
           </li>
-          <li class="step" data-step="2" data-reveal>
-            <img src="assets/img/work-640.webp" srcset="assets/img/work-640.webp 640w, assets/img/work-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="ארבעה אנשים בבגדים יומיומיים נכנסים בדלת צדדית של מבנה נמוך בשעת בוקר, בגבם למצלמה.">
-            <h3><span class="verb">עובדים</span> בשטח</h3>
+          <li class="step" data-step="2">
+            <div class="frame">
+              <h3 class="frame-strip"><bdi class="tag" dir="ltr" aria-hidden="true">02</bdi><span><span class="verb">עובדים</span> בשטח</span></h3>
+              <div class="frame-pic"><img src="assets/img/work-640.webp" srcset="assets/img/work-640.webp 640w, assets/img/work-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="ארבעה אנשים בבגדים יומיומיים נכנסים בדלת צדדית של מבנה נמוך בשעת בוקר, בגבם למצלמה."></div>
+            </div>
             <p>מפגש השטח נעשה בתוך ארגון: מגיעים בבגדי עבודה, עובדים לצד העובדים, ויושבים עם ההנהלה על איך המקום מתנהל באמת.</p>
             <p class="angles"><span>ההנהלה</span><span>העובדים</span><span>השטח</span></p>
           </li>
-          <li class="step" data-step="3" data-reveal>
-            <img src="assets/img/build-640.webp" srcset="assets/img/build-640.webp 640w, assets/img/build-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="ארבעה אנשים מול לוח מלא פתקים צבעוניים, אחד מהם מצביע על פתק">
-            <h3><span class="verb">מקימים</span> משהו משלכם</h3>
+          <li class="step" data-step="3">
+            <div class="frame">
+              <h3 class="frame-strip"><bdi class="tag" dir="ltr" aria-hidden="true">03</bdi><span><span class="verb">מקימים</span> משהו משלכם</span></h3>
+              <div class="frame-pic"><img src="assets/img/build-640.webp" srcset="assets/img/build-640.webp 640w, assets/img/build-960.webp 960w" sizes="(min-width: 900px) 36rem, calc(100vw - 2.5rem)" width="960" height="720" loading="lazy" decoding="async" alt="ארבעה אנשים מול לוח מלא פתקים צבעוניים, אחד מהם מצביע על פתק"></div>
+            </div>
             <p>לאורך הסמסטר כל צוות בונה מיזם חברתי משלו ומציג אותו בערב הסיום. יוצאים עם הכלים והניסיון להמשיך איתו.</p>
           </li>
         </ol>
@@ -150,8 +160,21 @@
     <div class="wrap">
       <h2 class="display" id="faq-h">שאלות</h2>
       <div class="faq-list" id="faq-list"></div>
-      <div class="cta-row cta-end">
-        <p class="btn is-soon" data-signup>ההרשמה נפתחת בקרוב</p>
+    </div>
+  </section>
+
+  <!-- S4, the terminal. main.js builds the track, the puck and the back face.
+       data-puck="off" shows a plain button instead of the slider (tap still flips the card). -->
+  <section class="section board terminal" id="signup" aria-labelledby="signup-h">
+    <div class="wrap">
+      <h2 class="display" id="signup-h">מצטרפים?</h2>
+      <div class="term" id="term" data-puck="on">
+        <div class="term-card">
+          <div class="face front">
+            <p class="caption">הרשמה עד <span class="todo" data-cfg="DEADLINE"><b>למילוי</b> · תאריך אחרון</span><span data-soon>&nbsp;· הטופס&nbsp;יפורסם&nbsp;כאן</span></p>
+            <p class="term-label" id="track-label">ההרשמה נפתחת בקרוב</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>

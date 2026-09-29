@@ -1,5 +1,9 @@
 /* FRONTLINE landing page. Tokens first; every colour and size below derives from them.
- * Layout uses logical properties only (inline = right-to-left here). */
+ * Layout uses logical properties only (inline = right-to-left here).
+ * Motion lives at the end of the file. The base style of every animated element is its
+ * finished state; the unfinished state is opt-in, under .js (and .st for the scroll-driven
+ * branch), and only with prefers-reduced-motion: no-preference. Each rule there names its
+ * row in the motion table (README.md). Nothing else on the page moves. */
 
 @font-face { font-family: "IBM Plex Sans Hebrew"; font-style: normal; font-weight: 400; font-display: swap;
   src: url(assets/fonts/plex-400-hebrew.woff2) format("woff2");
@@ -23,7 +27,7 @@
 
   /* colour: sampled from the logo */
   --paper: #FBF8F2;      /* the logo's cream, so its edge disappears */
-  --sand: #F3ECE1;       /* one step deeper, for the partner panel */
+  --sand: #F3ECE1;       /* one step deeper: the partner panel, and the cream text on the boards */
   --ink: #3F2E27;        /* the wordmark brown, 12.1:1 on paper */
   --ink-2: #6B5850;      /* secondary text, 6.3:1 */
   --rust: #8A2724;       /* the loops' dark end, text-safe 8.3:1 */
@@ -32,9 +36,16 @@
   --copper-lt: #C86334;  /* light copper, 3.7:1, accents only, never text */
   --hair: #E6D7C6;       /* hairlines */
 
+  /* the two boards (how it works, the sign-up terminal): the wordmark brown taken down to umber */
+  --board: #1B1310;       /* sand text on it 15.6:1 */
+  --board-2: #2A1D18;     /* raised: the terminal card; sand 13.9:1 */
+  --copper-glow: #E8895A; /* lines, labels and links on a board: 7.1:1 on board, 6.3:1 on board-2 */
+  --mute: #C9B8A6;        /* captions on a board: 9.5:1, 8.5:1 */
+
   /* type */
   --f-body: "IBM Plex Sans Hebrew", "Segoe UI", "Arial Hebrew", system-ui, sans-serif;
   --f-display: "Karantina", var(--f-body);
+  --t-util: 0.75rem;     /* the utility voice: tags, captions, the stops */
   --t-sm: 0.875rem;
   --t-body: 1.0625rem;
   --t-h3: 1.3125rem;
@@ -51,7 +62,9 @@
 
   --radius: 0.625rem;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dir: 1;              /* the sign of "toward inline-end" on the x axis */
 }
+[dir="rtl"] { --dir: -1; }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -66,6 +79,7 @@ h1, h2, h3, p, ul, ol, figure { margin: 0; }
 img { display: block; max-inline-size: 100%; block-size: auto; }
 a { color: var(--rust); text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
 a:hover { color: var(--rust-deep); }
+button { font: inherit; color: inherit; -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid var(--rust); outline-offset: 3px; border-radius: 4px; }
 .sr-only { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
@@ -84,10 +98,13 @@ a:hover { color: var(--rust-deep); }
   font-weight: 400;
   line-height: 1.7;
   letter-spacing: 0;
+  text-transform: none;
   white-space: nowrap;
   vertical-align: 0.08em;
 }
 .todo b { font-weight: 700; }
+/* On a board the chip keeps its shape and its word; only the colours change (rust is 2.1:1 there). */
+.board .todo { border-color: var(--copper-glow); background: rgb(232 137 90 / 0.1); color: var(--sand); }
 
 /* ---- buttons ---------------------------------------------------------------- */
 .btn {
@@ -102,11 +119,10 @@ a:hover { color: var(--rust-deep); }
   color: var(--paper);
   font: 700 var(--t-body) / 1.2 var(--f-body);
   text-decoration: none;
-  transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 a.btn:hover { background: var(--rust-deep); color: var(--paper); }
-a.btn:active { transform: translateY(1px); }
 .btn.is-soon { background: transparent; color: var(--rust); border-style: dashed; border-color: var(--copper); }
+button.btn { cursor: pointer; }
 .btn-line { background: transparent; color: var(--rust); }
 a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .btn-line.is-off { border-style: dashed; border-color: var(--copper); color: var(--copper); }
@@ -150,12 +166,27 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 }
 .cta-row { display: flex; flex-direction: column; align-items: center; gap: var(--s-4); margin-block-start: var(--s-6); inline-size: 100%; }
 .cta-row .btn { inline-size: min(100%, 22rem); }
-.text-link { font-weight: 700; }
+.text-link { display: inline-flex; align-items: center; min-block-size: 2.75rem; font-weight: 700; }
 
-/* logo reveal: the mark, then the wordmark. 600 ms end to end. */
-@keyframes rise { from { opacity: 0; transform: translateY(0.5rem) scale(0.985); } }
-.mark { animation: rise 0.45s var(--ease) both; }
-.wordmark, .tagline { animation: rise 0.45s 0.15s var(--ease) both; }
+/* ---- the hero's soon panel, and the actions both panels share (main.js builds them) ---- */
+.soon-panel { display: grid; grid-template-rows: 0fr; inline-size: min(100%, 22rem); margin-block-start: calc(var(--s-4) * -1); }
+.soon-panel.is-open { grid-template-rows: 1fr; }
+.soon-inner { min-block-size: 0; overflow: clip; visibility: hidden; }
+.soon-panel.is-open .soon-inner { visibility: visible; }
+.soon-inner > * { margin-block-start: var(--s-3); }
+.acts { padding: 0; list-style: none; }
+.acts li + li { border-block-start: 1px solid var(--hair); }
+.act {
+  display: block;
+  padding-block: var(--s-3); /* one line is 48 px tall */
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  text-wrap: balance;
+}
+.act:hover { text-decoration: underline; }
+.acts-none { padding-block: var(--s-3); color: var(--ink-2); text-wrap: balance; }
 
 /* ---- section heads ------------------------------------------------------------ */
 .kicker { margin-block-end: var(--s-3); font-size: var(--t-sm); font-weight: 700; letter-spacing: 0.04em; color: var(--rust); }
@@ -176,36 +207,113 @@ h2.display::after {
   clip-path: polygon(0.3rem 0, calc(100% - 0.3rem) 0, 100% 50%, calc(100% - 0.3rem) 100%, 0.3rem 100%, 0 50%);
 }
 
-/* ---- how it works: the ring --------------------------------------------------- */
+/* ---- the boards: the only dark surfaces, a faint static grid and nothing else ---------- */
+.section.board { --pad: var(--s-8); padding-block: var(--pad); }
+.board {
+  background-color: var(--board);
+  background-image:
+    linear-gradient(rgb(232 137 90 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(232 137 90 / 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--sand);
+}
+.board .kicker { color: var(--copper-glow); }
+.board .display { color: var(--sand); }
+.board h2.display::after { background: linear-gradient(90deg, var(--copper-glow), var(--copper)); }
+.board :focus-visible { outline-color: var(--copper-glow); }
+.board a { color: var(--copper-glow); }
+
+/* ---- the wire: 2 px of copper in the inline-start gutter, one segment per section ------- */
+.hero, .section { position: relative; }
+.hero::before, .section::before, .terminal .wrap::before {
+  content: "";
+  inline-size: 2px;
+  background: var(--copper);
+  transform-origin: top;
+  pointer-events: none;
+}
+.hero::before, .section::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter) / 2 - 1px);
+}
+.hero::before { inset-block-start: auto; block-size: var(--s-8); } /* from just under the button row */
+.board::before, .terminal .wrap::before { background: var(--copper-glow); }
+/* The terminal's segment stops at the card: it is a grid item that reaches up through the
+   section's top padding and down through the gap, so the card's own border continues it. */
+.terminal::before { content: none; }
+.terminal .wrap { display: grid; row-gap: var(--s-6); }
+.terminal .wrap::before {
+  grid-area: 1 / 1;
+  justify-self: start;
+  margin-inline-start: calc(var(--gutter) / -2 - 1px);
+  margin-block: calc(var(--pad) * -1) calc(var(--s-6) * -1);
+}
+
+/* ---- how it works: S1, the ring ------------------------------------------------ */
 .how-grid { display: grid; gap: var(--s-7); margin-block-start: var(--s-7); }
-.ring-wrap { justify-self: center; inline-size: min(100%, 18.75rem); }
+.ring-wrap { position: relative; justify-self: center; inline-size: min(100%, 18.75rem); }
 .ring { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
-.ring .track { fill: none; stroke: var(--hair); stroke-width: 1.5; }
+.ring .track { fill: none; stroke: rgb(232 137 90 / 0.2); stroke-width: 1.5; }
 .ring .arc { fill: none; stroke: url(#ring-grad); stroke-width: 14; stroke-dasharray: 1 1; stroke-dashoffset: 0; }
-.js .ring .arc { stroke-dashoffset: 1; transition: stroke-dashoffset 0.35s var(--ease); }
-.js .ring[data-step="1"] .arc-1,
-.js .ring[data-step="2"] :is(.arc-1, .arc-2),
-.js .ring[data-step="3"] .arc { stroke-dashoffset: 0; }
-.ring.is-all .arc-2 { transition-delay: 0.12s; }
-.ring.is-all .arc-3 { transition-delay: 0.24s; }
-.ring .lbl { font: 700 17px var(--f-body); fill: var(--ink-2); text-anchor: middle; transition: fill 0.3s var(--ease); }
+.ring .lbl { font: 700 17px var(--f-body); fill: var(--mute); text-anchor: middle; }
 .ring:not(.is-all)[data-step="1"] .lbl-1,
 .ring:not(.is-all)[data-step="2"] .lbl-2,
-.ring:not(.is-all)[data-step="3"] .lbl-3 { fill: var(--rust); }
-.ring .deg { font: 700 42px var(--f-body); fill: var(--ink); text-anchor: middle; direction: ltr; unicode-bidi: isolate; transition: fill 0.3s var(--ease); }
-.ring[data-step="3"] .deg { fill: var(--rust); }
+.ring:not(.is-all)[data-step="3"] .lbl-3 { fill: var(--copper-glow); }
+.ring .deg { font: 700 42px var(--f-body); font-variant-numeric: tabular-nums; fill: var(--copper-glow); text-anchor: middle; direction: ltr; unicode-bidi: isolate; }
+.js .ring-wrap:not(.is-full) .deg { fill: var(--sand); }
+/* the tick hand: an HTML layer over the SVG so its turn stays on the compositor; at rest it
+   stands in the gap at the top of the ring, between the last arc and the first */
+.hand { position: absolute; inset: 0; pointer-events: none; }
+.hand::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(50% - 1.5px);
+  inset-block-start: 3.75%;
+  inline-size: 3px;
+  block-size: 12.5%;
+  border-radius: 2px;
+  background: var(--sand);
+}
 
+/* ---- how it works: S2, the viewfinder frames ------------------------------------- */
 .steps { display: grid; gap: var(--s-8); padding: 0; list-style: none; }
-.step img { inline-size: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); background: var(--sand); }
-.step h3 { margin-block-start: var(--s-5); font: 700 var(--t-h3) / 1.3 var(--f-body); }
+.frame {
+  position: relative;
+  padding: var(--s-3);
+  border: 1px solid rgb(232 137 90 / 0.5);
+}
+/* corner ticks: two pseudo-elements, the top pair and the bottom pair, zero bytes.
+   The team tiles use the same ticks (see .tile). */
+.frame::before, .frame::after, .tile::before, .tile::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--tk-out);
+  block-size: var(--tk-arm);
+  background-image:
+    linear-gradient(var(--tk-c) 0 0), linear-gradient(var(--tk-c) 0 0),
+    linear-gradient(var(--tk-c) 0 0), linear-gradient(var(--tk-c) 0 0);
+  background-repeat: no-repeat;
+  background-size: var(--tk-arm) var(--tk-w), var(--tk-w) var(--tk-arm), var(--tk-arm) var(--tk-w), var(--tk-w) var(--tk-arm);
+  pointer-events: none;
+}
+.frame::before, .tile::before { inset-block-start: var(--tk-out); background-position: left top, left top, right top, right top; }
+.frame::after, .tile::after { inset-block-end: var(--tk-out); background-position: left bottom, left bottom, right bottom, right bottom; }
+.frame { --tk-out: -1px; --tk-arm: 1rem; --tk-w: 2px; --tk-c: var(--copper-glow); }
+.frame-strip { display: flex; align-items: baseline; gap: var(--s-3); margin-block-end: var(--s-3); font: 700 var(--t-h3) / 1.3 var(--f-body); color: var(--sand); }
+.tag { font: 400 var(--t-util) / 1 var(--f-body); letter-spacing: 0.12em; font-variant-numeric: tabular-nums; color: var(--mute); }
+.frame-pic { position: relative; overflow: clip; aspect-ratio: 4 / 3; background: var(--board-2); }
+.frame-pic img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+.frame-pic::after { content: ""; position: absolute; inset: 0; background: var(--board); opacity: 0; pointer-events: none; }
 .step .verb { color: var(--rust); }
-.step p { margin-block-start: var(--s-2); max-inline-size: var(--measure); }
-.step .angles { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-block-start: var(--s-4); font-size: var(--t-sm); font-weight: 700; color: var(--rust); }
-.angles span + span::before { content: "·"; margin-inline-end: var(--s-3); color: var(--copper-lt); }
+.board .step .verb { color: var(--copper-glow); }
+.step > p { margin-block-start: var(--s-4); max-inline-size: var(--measure); }
+.step .angles { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-block-start: var(--s-4); font-size: var(--t-sm); font-weight: 700; color: var(--copper-glow); }
+.angles span + span::before { content: "·"; margin-inline-end: var(--s-3); color: var(--mute); }
 .closing {
   margin-block-start: var(--s-8);
   font: 700 clamp(2rem, 1.4rem + 3vw, 3.25rem) / 1.05 var(--f-display);
-  color: var(--rust);
+  color: var(--copper-glow);
   text-align: center;
   text-wrap: balance;
 }
@@ -230,8 +338,7 @@ h2.display::after {
 .partner-actions .btn { min-inline-size: 8.5rem; }
 .contact-line { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); margin-block-start: var(--s-4); font-size: var(--t-sm); color: var(--ink-2); }
 
-/* ---- people cards (team, speakers) ------------------------------------------------ */
-.team-list { display: grid; gap: 0 var(--s-6); margin-block-start: var(--s-6); padding: 0; list-style: none; }
+/* ---- speaker cards (who) ------------------------------------------------------------ */
 .person { display: flex; gap: var(--s-4); align-items: flex-start; padding-block: var(--s-5); border-block-start: 1px solid var(--hair); }
 .avatar {
   flex: none;
@@ -251,6 +358,47 @@ h2.display::after {
 .person-name { font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
 .person-role { margin-block-start: var(--s-1); font-size: var(--t-sm); font-weight: 700; color: var(--rust); }
 .person-line { margin-block-start: var(--s-2); color: var(--ink-2); }
+
+/* ---- team: S3, a card opens in place ------------------------------------------------ */
+.team-list { display: grid; gap: 0 var(--s-6); align-items: start; margin-block-start: var(--s-6); padding: 0; list-style: none; }
+.member { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--s-5); align-items: center; }
+.tile {
+  --tk-out: -7px; --tk-arm: 0.75rem; --tk-w: 1.5px; --tk-c: var(--copper);
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 6rem;
+  block-size: 6rem;
+  margin: 7px;
+  border: 1.5px solid var(--hair);
+  border-radius: 0.5rem;
+  color: var(--copper);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.tile img { inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: calc(0.5rem - 1.5px); }
+.tile.is-empty { border-style: dashed; border-color: var(--copper); }
+.member.is-open .tile { border-color: var(--copper); }
+.member .person-name button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 700;
+  line-height: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+/* the whole card is the button's hit area; the focus ring follows it */
+.member .person-name button::after { content: ""; position: absolute; inset: 0; border-radius: 0.5rem; }
+.member .person-name button:focus-visible { outline: none; }
+.member .person-name button:focus-visible::after { outline: 2px solid var(--rust); outline-offset: 2px; }
+.more { display: block; margin-block-start: var(--s-2); font-size: var(--t-sm); color: var(--copper); }
+.bio-chip { margin-block-start: var(--s-2); }
+.bio { grid-column: 1 / -1; display: grid; grid-template-rows: 0fr; }
+.member.is-open .bio { grid-template-rows: 1fr; }
+.bio > div { min-block-size: 0; overflow: clip; visibility: hidden; }
+.member.is-open .bio > div { visibility: visible; }
+.bio p { padding-block-start: var(--s-4); max-inline-size: var(--measure); white-space: pre-line; }
 
 /* ---- FAQ ---------------------------------------------------------------------------- */
 .faq-list { margin-block-start: var(--s-6); max-inline-size: 44rem; border-block-start: 1px solid var(--hair); }
@@ -276,13 +424,258 @@ h2.display::after {
   background:
     linear-gradient(var(--rust), var(--rust)) center / 100% 2px no-repeat,
     linear-gradient(var(--rust), var(--rust)) center / 2px 100% no-repeat;
-  transition: transform 0.25s var(--ease);
 }
 .faq-list details[open] summary::after { transform: rotate(45deg); }
 .faq-list summary:hover { color: var(--rust); }
 .answer { padding-block-end: var(--s-5); max-inline-size: var(--measure); }
-/* The expand animation is opt-in: it exists only when motion is allowed, because
-   the global reduced-motion reset below cannot reach ::details-content. */
+
+/* ---- S4, the terminal ------------------------------------------------------------------ */
+.terminal h2 { grid-area: 1 / 1; }
+.term {
+  grid-area: 2 / 1;
+  /* its inline-start edge sits on the wire, so the wire runs into the card's border */
+  inline-size: min(22rem + var(--gutter) / 2 + 1px, 100% + var(--gutter) / 2 + 1px);
+  margin-inline-start: calc(var(--gutter) / -2 - 1px);
+  perspective: 900px;
+}
+.term-card { display: grid; transform-style: preserve-3d; }
+.face {
+  grid-area: 1 / 1;
+  padding: var(--s-5);
+  border: 2px solid var(--copper-glow);
+  border-radius: 0.75rem;
+  border-start-start-radius: 0; /* the corner where the wire comes in */
+  background: var(--board-2);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.front { display: flex; flex-direction: column; }
+.front .slide { margin-block-start: auto; } /* the card is as tall as its taller face: the slider sits at the foot */
+.front .hint { margin-block-end: var(--s-5); }
+.back { transform: rotateY(180deg); visibility: hidden; }
+.term.is-flipped .term-card { transform: rotateY(-180deg); }
+.term.is-flipped .front { visibility: hidden; }
+.term.is-flipped .back { visibility: visible; }
+.caption { font-size: var(--t-util); line-height: 1.6; letter-spacing: 0.12em; color: var(--mute); }
+.term-label { margin-block-start: var(--s-3); font-size: 1.375rem; font-weight: 700; line-height: 1.3; color: var(--sand); }
+.hint { margin-block-start: var(--s-1); font-size: var(--t-sm); color: var(--mute); }
+.verbs { margin-block-start: auto; padding-block-start: var(--s-5); font-size: var(--t-util); letter-spacing: 0.12em; color: var(--mute); }
+.term .btn { inline-size: 100%; margin-block-start: var(--s-3); border-color: var(--copper-glow); background: transparent; color: var(--sand); }
+.term a.btn { background: var(--copper-glow); color: var(--board); }
+.term a.btn:hover { background: var(--sand); color: var(--board); }
+.slide { position: relative; flex: none; block-size: 3.5rem; touch-action: pan-y; }
+.rail {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  border-radius: 999px;
+  background: var(--board);
+  box-shadow: inset 0 0 0 1px rgb(232 137 90 / 0.3);
+}
+/* the fill rides with the puck, its round end around the puck; it shows only while the
+   puck is away from its rest */
+.fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(3.5rem - 100%);
+  inline-size: 100%;
+  border-radius: 999px;
+  background: rgb(183 64 38 / 0.5);
+  opacity: 0;
+  transform: translateX(var(--x, 0px));
+}
+.term:is(.is-dragging, .is-docking, .is-returning) .fill { opacity: 1; }
+.stops {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: center;
+  justify-items: center;
+  margin: 0;
+  padding: 0 3.5rem;
+  list-style: none;
+  font-size: var(--t-util);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+.stops .is-lit { color: var(--sand); }
+.puck {
+  position: absolute;
+  inset-block-start: 0.25rem;
+  inset-inline-start: 0.25rem;
+  display: grid;
+  place-items: center;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--copper);
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateX(var(--x, 0px));
+}
+.puck svg { inline-size: 1.875rem; block-size: 1.875rem; fill: currentColor; }
+.puck::after { content: ""; position: absolute; inset: 0; border: 2px solid var(--copper-glow); border-radius: 50%; opacity: 0; pointer-events: none; }
+.term.is-touching :is(.puck, .fill) { will-change: transform; }
+.term.is-dragging .puck { cursor: grabbing; }
+.back-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.back-h { font-size: var(--t-h3); font-weight: 700; line-height: 1.3; color: var(--sand); }
+.back .acts { margin-block-start: var(--s-2); }
+.back .acts li + li { border-block-start-color: rgb(232 137 90 / 0.22); }
+.back .act { text-align: start; color: var(--copper-glow); }
+.back .acts-none { margin-block-start: var(--s-2); color: var(--mute); }
+.flip-back {
+  flex: none;
+  min-block-size: 2.75rem;
+  min-inline-size: 2.75rem;
+  padding-inline: var(--s-2);
+  margin-inline-end: calc(var(--s-2) * -1);
+  border: 0;
+  background: none;
+  color: var(--mute);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+
+/* ---- footer ------------------------------------------------------------------------- */
+.foot { border-block-start: 1px solid var(--hair); padding-block: var(--s-6); font-size: var(--t-sm); color: var(--ink-2); }
+.foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4); }
+.foot-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); padding: 0; list-style: none; }
+.foot-links a { display: inline-flex; align-items: center; justify-content: center; min-block-size: 2.75rem; min-inline-size: 2.75rem; }
+.icon-link { display: inline-flex; }
+/* Logos: height from here, width from the file's own ratio (main.js sets the box). */
+[data-foot="aguda"] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
+.aguda-logo { block-size: 4.5rem; inline-size: auto; }
+
+/* ---- wider screens ---------------------------------------------------------------------- */
+@media (min-width: 640px) {
+  .team-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .people-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .partner { margin-inline: 0; padding: var(--s-7); border-radius: 1rem; }
+  .tile { inline-size: 7rem; block-size: 7rem; }
+}
+@media (min-width: 900px) {
+  .section { padding-block: var(--s-8); }
+  .section.board { --pad: var(--s-9); }
+  .hero { padding-block: var(--s-8); }
+  .partner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--s-8); }
+  .how-grid { grid-template-columns: minmax(0, 36rem) minmax(16rem, 1fr); column-gap: var(--s-8); align-items: start; }
+  .steps { grid-column: 1; grid-row: 1; gap: var(--s-9); }
+  .ring-wrap { grid-column: 2; grid-row: 1; position: sticky; inset-block-start: max(var(--s-6), calc(50vh - 10rem)); inline-size: min(100%, 20rem); }
+  .people-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .team-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .member { grid-template-columns: minmax(0, 1fr); row-gap: var(--s-4); align-items: start; }
+}
+
+/* =========================================================================================
+   MOTION. Row names (H1, W1, R1 ...) are the rows of the motion table in README.md.
+   ========================================================================================= */
+@keyframes rise { from { opacity: 0; transform: translateY(0.5rem) scale(0.985); } }   /* H1 */
+@keyframes wire-fill { from { transform: scaleY(0); } }                                 /* H2, W1 */
+@keyframes hand-turn { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } /* R2 */
+/* R1: each arc draws while the hand crosses it (arcs span 6-114, 126-234, 246-354 degrees) */
+@keyframes arc-1 { 0%, 1.667% { stroke-dashoffset: 1; } 31.667%, 100% { stroke-dashoffset: 0; } }
+@keyframes arc-2 { 0%, 35% { stroke-dashoffset: 1; } 65%, 100% { stroke-dashoffset: 0; } }
+@keyframes arc-3 { 0%, 68.333% { stroke-dashoffset: 1; } 98.333%, 100% { stroke-dashoffset: 0; } }
+@keyframes drift { from { transform: translateY(4%) scale(1.08); } }                    /* N2 */
+@keyframes arm-ring { from { transform: scale(1); opacity: 0.6; } to { transform: scale(1.6); opacity: 0; } } /* E1 */
+@keyframes nudge { 0%, 100% { translate: 0; } 45% { translate: calc(6px * var(--dir)) 0; } }                  /* E2 */
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+
+  /* H1 logo reveal: the mark, then the wordmark, 600 ms end to end */
+  .mark { animation: rise 0.45s var(--ease) both; }
+  .wordmark, .tagline { animation: rise 0.45s 0.15s var(--ease) both; }
+
+  /* H2 the wire powers on under the button */
+  .hero::before { animation: wire-fill 0.5s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+  /* W1 fallback: without scroll timelines each segment draws once, as its section arrives */
+  .js:not(.st) .section::before, .js:not(.st) .terminal .wrap::before { transition: transform 0.6s var(--ease); }
+  .js:not(.st) .section:not(.is-wired)::before,
+  .js:not(.st) .terminal:not(.is-wired) .wrap::before { transform: scaleY(0); }
+
+  /* C1 section reveals and the closing line: one-shot, they only add */
+  .js [data-reveal] { transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
+  .js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(0.75rem); }
+
+  /* R1 one-shot arcs: the fallback on phones, data-ring="once", and the wide sticky ring,
+     which closes arc by arc as each step is read */
+  .js .ring-wrap:not([data-ring="off"]) .arc { transition: stroke-dashoffset 0.35s var(--ease); }
+  .js .ring-wrap:not([data-ring="off"]) .ring[data-step="0"] .arc-1,
+  .js .ring-wrap:not([data-ring="off"]) .ring:is([data-step="0"], [data-step="1"]) .arc-2,
+  .js .ring-wrap:not([data-ring="off"]) .ring:not([data-step="3"]) .arc-3 { stroke-dashoffset: 1; }
+  .ring.is-all .arc-2 { transition-delay: 0.12s; }
+  .ring.is-all .arc-3 { transition-delay: 0.24s; }
+  /* R2 one turn, 700 ms, when the one-shot ring closes on a phone */
+  .js .ring-wrap.is-turning .hand { animation: hand-turn 0.7s var(--ease) both; }
+
+  /* N1 a frame locks on: ticks 4 px outward, the picture un-tints, the hairline brightens */
+  .js .frame { transition: border-color 0.25s var(--ease); }
+  .js .frame::before, .js .frame::after { transition: translate 0.3s var(--ease); }
+  .js .frame-pic::after { transition: opacity 0.4s var(--ease); }
+  .js .frame:not(.is-locked) { border-color: rgb(200 99 52 / 0.35); }
+  .js .frame:not(.is-locked)::before { translate: 0 4px; }
+  .js .frame:not(.is-locked)::after { translate: 0 -4px; }
+  .js .frame:not(.is-locked) .frame-pic::after { opacity: 0.55; }
+
+  /* N3 the three angles tick on in frame 2, from inline-start */
+  .js .angles span { transition: opacity 0.25s var(--ease), translate 0.25s var(--ease); }
+  .js .angles span:nth-child(2) { transition-delay: 80ms; }
+  .js .angles span:nth-child(3) { transition-delay: 160ms; }
+  .js .angles:not(.is-in) span { opacity: 0; translate: calc(-8px * var(--dir)) 0; }
+
+  /* T1 a team card opens: rows 0fr to 1fr, then the bio hides only after the fold; the tile's ring lights */
+  .bio { transition: grid-template-rows 0.32s var(--ease); }
+  .bio > div { transition: visibility 0s 0.32s; }
+  .member.is-open .bio > div { transition-delay: 0s; }
+  .tile { transition: border-color 0.2s var(--ease), scale 0.12s var(--ease); }
+
+  /* U1 the hero panel unfolds, the same way */
+  .soon-panel { transition: grid-template-rows 0.32s var(--ease); }
+  .soon-inner { transition: visibility 0s 0.32s; }
+  .soon-panel.is-open .soon-inner { transition-delay: 0s; }
+
+  /* F1 FAQ: the plus turns, the answer opens (the open is opt-in: see below) */
+  .faq-list summary::after { transition: transform 0.25s var(--ease); }
+
+  /* E1 the terminal arms: dashed to solid, one ring from the puck */
+  .js .term .front { transition: border-color 0.25s var(--ease), visibility 0s; }
+  .js .term.is-flipped .front { transition: border-color 0.25s var(--ease), visibility 0s 0.5s; }
+  .js .term:not(.is-armed) .front { border-style: dashed; border-color: var(--copper-lt); }
+  .js .term.is-armed .puck::after { animation: arm-ring 0.6s var(--ease) both; }
+  /* E2 the puck nudges toward the end twice, once, after the ring */
+  .js .term.is-armed:not(.is-touched) .puck { animation: nudge 0.9s 0.7s var(--ease) 2; }
+  /* E4 return below 92%: a spring curve main.js writes into --spring (one overshoot) */
+  .term.is-returning :is(.puck, .fill) { transition: transform 0.6s var(--spring, var(--ease)), scale 0.12s var(--ease); }
+  /* E5 dock at 92% or more, or on tap, Enter or Space */
+  .term.is-docking :is(.puck, .fill) { transition: transform 0.12s var(--ease), scale 0.12s var(--ease); }
+  /* E6 the card turns toward the reading direction; each face shows or hides at the right end of the turn */
+  .term-card { transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .back { transition: visibility 0s 0.5s; }
+  .term.is-flipped .back { transition: visibility 0s; }
+
+  /* P1 every tap is answered */
+  a.btn, button.btn, .puck { transition: scale 0.12s var(--ease); }
+  a.btn:active, button.btn:active, .puck:active, .member:active .tile { scale: 0.985; }
+}
+
+/* F1 FAQ expand: ::details-content cannot be reached by the reduced-motion reset below. */
 @media (prefers-reduced-motion: no-preference) {
   @supports (interpolate-size: allow-keywords) {
     :root { interpolate-size: allow-keywords; }
@@ -294,45 +687,53 @@ h2.display::after {
     .faq-list details[open]::details-content { block-size: auto; }
   }
 }
-.cta-end { margin-block-start: var(--s-7); max-inline-size: 44rem; align-items: flex-start; }
 
-/* ---- footer ------------------------------------------------------------------------- */
-.foot { border-block-start: 1px solid var(--hair); padding-block: var(--s-6); font-size: var(--t-sm); color: var(--ink-2); }
-.foot-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4); }
-.foot-links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-5); padding: 0; list-style: none; }
-.foot-links a { display: inline-flex; align-items: center; min-block-size: 2.75rem; }
-.icon-link { display: inline-flex; }
-/* Logos: height from here, width from the file's own ratio (main.js sets the box). */
-[data-foot="aguda"] { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }
-.aguda-logo { block-size: 4.5rem; inline-size: auto; }
+/* The scrubbed rules: only with scroll timelines, only with motion allowed, and only when
+   main.js has confirmed the support (.st), so the IO branch and this one never both apply. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* W1 the wire fills 1:1 with the thumb: its tip rides at 72% of the screen's height
+       (a 1 px view window there), so segment after segment fills with no gap between them */
+    .st .section::before, .st .terminal .wrap::before {
+      animation: wire-fill linear both;
+      animation-timeline: view(block calc(72% - 1px) 28%);
+    }
+    /* N2 the picture drifts inside its frame and settles */
+    .st .steps[data-drift="on"] .frame-pic img {
+      animation: drift linear both;
+      animation-timeline: view();
+    }
+  }
+  /* R1, R2 on phones: the ring draws while it travels up the lower part of the screen;
+     the readout (R3, main.js) watches the same travel with the same 15% inset */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 899.98px) {
+    .st .ring-wrap[data-ring="scroll"] { view-timeline-name: --ring; view-timeline-axis: block; view-timeline-inset: 0% 15%; }
+    .st .ring-wrap[data-ring="scroll"] :is(.arc, .hand) {
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --ring;
+      animation-range: entry 0% entry 100%;
+    }
+    .st .ring-wrap[data-ring="scroll"] .arc-1 { animation-name: arc-1; }
+    .st .ring-wrap[data-ring="scroll"] .arc-2 { animation-name: arc-2; }
+    .st .ring-wrap[data-ring="scroll"] .arc-3 { animation-name: arc-3; }
+    .st .ring-wrap[data-ring="scroll"] .hand { animation-name: hand-turn; }
+  }
+}
 
-/* ---- scroll reveals (only once main.js runs) -------------------------------------------- */
-.js [data-reveal] { opacity: 0; transform: translateY(0.75rem); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease); }
-.js [data-reveal].is-in { opacity: 1; transform: none; }
-
-/* ---- wider screens ---------------------------------------------------------------------- */
-@media (min-width: 640px) {
-  .team-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .people-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .partner { margin-inline: 0; padding: var(--s-7); border-radius: 1rem; }
-}
-@media (min-width: 900px) {
-  .section { padding-block: var(--s-8); }
-  .hero { padding-block: var(--s-8); }
-  .partner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--s-8); }  .how-grid { grid-template-columns: minmax(0, 36rem) minmax(16rem, 1fr); column-gap: var(--s-8); align-items: start; }
-  .steps { grid-column: 1; grid-row: 1; gap: var(--s-9); }
-  .ring-wrap { grid-column: 2; grid-row: 1; position: sticky; inset-block-start: max(var(--s-6), calc(50vh - 10rem)); inline-size: min(100%, 20rem); }
-  .people-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-@media (min-width: 1100px) {
-  .team-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .team-list .person { flex-direction: column; }
+/* R2 on wide screens: the hand steps with the sticky ring */
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
+  .js .ring-wrap .hand { transition: transform 0.35s var(--ease); }
+  .js .ring[data-step="1"] + .hand { transform: rotate(120deg); }
+  .js .ring[data-step="2"] + .hand { transform: rotate(240deg); }
+  .js .ring[data-step="3"] + .hand { transform: rotate(360deg); }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
-}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .js [data-reveal] { opacity: 1; transform: none; }
+  /* P1 with reduced motion: colour only */
+  a.btn:active { background: var(--rust-deep); }
+  button.btn.is-soon:active, a.btn-line:active { background: rgb(138 39 36 / 0.08); }
+  .puck:active { background: var(--sand); }
 }
