@@ -128,9 +128,11 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .btn-line.is-off { border-style: dashed; border-color: var(--copper); color: var(--copper); }
 
 /* ---- hero ------------------------------------------------------------------- */
-.hero { padding-block: var(--s-7) var(--s-8); text-align: center; }
+/* Hero addendum (Owner, 2026-09-29): a tighter rhythm on phones, so the first screen ends on
+   the dark board and its kicker, the hand-off that invites the scroll. */
+.hero { --pad-end: var(--s-7); padding-block: var(--s-6) var(--pad-end); text-align: center; }
 .hero-inner { display: flex; flex-direction: column; align-items: center; max-inline-size: 46rem; }
-.mark { inline-size: clamp(150px, 42vw, 220px); margin-block-end: var(--s-5); }
+.mark { inline-size: clamp(150px, 42vw, 220px); margin-block-end: var(--s-4); }
 .wordmark { font: 700 var(--t-wordmark) / 1 var(--f-body); letter-spacing: 0.05em; color: var(--ink); }
 .tagline {
   margin-block-start: var(--s-3);
@@ -145,7 +147,7 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .backing.has-logo { display: grid; justify-items: center; gap: var(--s-2); margin-block-start: var(--s-5); }
 .backing-logo { block-size: 3rem; inline-size: auto; }
 .lead {
-  margin-block-start: var(--s-6);
+  margin-block-start: var(--s-5);
   max-inline-size: 30ch;
   font-size: var(--t-lead);
   line-height: 1.55;
@@ -153,23 +155,45 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 }
 .lead > span { display: block; }
 .lead em { font-style: normal; font-weight: 700; color: var(--rust); white-space: nowrap; }
+/* Hero addendum: the facts read as one instrument strip, the board's voice on cream:
+   hairlines above and below, copper dividers, tabular figures. */
 .facts {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--s-2) var(--s-5);
-  margin-block-start: var(--s-6);
-  padding: 0;
+  row-gap: var(--s-2);
+  inline-size: min(100%, 30rem);
+  margin-block-start: var(--s-5);
+  padding: var(--s-3) 0;
+  border-block: 1px solid var(--hair);
   list-style: none;
   font-size: var(--t-sm);
-  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
-.cta-row { display: flex; flex-direction: column; align-items: center; gap: var(--s-4); margin-block-start: var(--s-6); inline-size: 100%; }
+.facts li { padding-inline: var(--s-4); }
+.facts li + li { border-inline-start: 1px solid rgb(183 64 38 / 0.4); }
+@media (max-width: 479.98px) {
+  .facts li:last-child { flex-basis: 100%; border-inline-start: 0; } /* the meeting time takes its own line */
+}
+.cta-row { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); margin-block-start: var(--s-5); inline-size: 100%; }
+/* Hero addendum: the soon button unfolds, so it carries the FAQ's plus; open, it turns to a cross */
+.hero button.btn.is-soon { gap: var(--s-3); }
+.hero button.btn.is-soon::after {
+  content: "";
+  flex: none;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+}
+.hero button.btn.is-soon[aria-expanded="true"]::after { transform: rotate(45deg); }
 .cta-row .btn { inline-size: min(100%, 22rem); }
 .text-link { display: inline-flex; align-items: center; min-block-size: 2.75rem; font-weight: 700; }
 
 /* ---- the hero's soon panel, and the actions both panels share (main.js builds them) ---- */
-.soon-panel { display: grid; grid-template-rows: 0fr; inline-size: min(100%, 22rem); margin-block-start: calc(var(--s-4) * -1); }
+.soon-panel { display: grid; grid-template-rows: 0fr; inline-size: min(100%, 22rem); margin-block-start: calc(var(--s-2) * -1); } /* closed, it takes no gap */
 .soon-panel.is-open { grid-template-rows: 1fr; }
 .soon-inner { min-block-size: 0; overflow: clip; visibility: hidden; }
 .soon-panel.is-open .soon-inner { visibility: visible; }
@@ -237,7 +261,7 @@ h2.display::after {
   inset-block: 0;
   inset-inline-start: calc(max(0px, (100% - var(--wide)) / 2) + var(--gutter) / 2 - 1px);
 }
-.hero::before { inset-block-start: auto; block-size: var(--s-8); } /* from just under the button row */
+.hero::before { inset-block-start: auto; block-size: var(--pad-end); } /* the hero's foot: from just under the button row */
 .board::before, .terminal .wrap::before { background: var(--copper-glow); }
 /* The terminal's segment stops at the card: it is a grid item that reaches up through the
    section's top padding and down through the gap, so the card's own border continues it. */
@@ -262,18 +286,20 @@ h2.display::after {
 .ring:not(.is-all)[data-step="3"] .lbl-3 { fill: var(--copper-glow); }
 .ring .deg { font: 700 42px var(--f-body); font-variant-numeric: tabular-nums; fill: var(--copper-glow); text-anchor: middle; direction: ltr; unicode-bidi: isolate; }
 .js .ring-wrap:not(.is-full) .deg { fill: var(--sand); }
-/* the tick hand: an HTML layer over the SVG so its turn stays on the compositor; at rest it
-   stands in the gap at the top of the ring, between the last arc and the first */
-.hand { position: absolute; inset: 0; pointer-events: none; }
-.hand::before {
-  content: "";
+/* the tick hand: an HTML bar over the SVG so its turn stays on the compositor. It runs from
+   the tick down to the ring's centre and pivots there, so no angle can push it outside the
+   ring (a turned full-size layer would widen an RTL page). At rest the tick stands in the
+   gap at the top of the ring, between the last arc and the first. */
+.hand {
   position: absolute;
   inset-inline-start: calc(50% - 1.5px);
   inset-block-start: 3.75%;
   inline-size: 3px;
-  block-size: 12.5%;
+  block-size: 46.25%;
   border-radius: 2px;
-  background: var(--sand);
+  background: linear-gradient(var(--sand) 0 0) top / 100% 27% no-repeat; /* the visible tick: the top 12.5% of the ring */
+  transform-origin: 50% 100%;
+  pointer-events: none;
 }
 
 /* ---- how it works: S2, the viewfinder frames ------------------------------------- */
@@ -569,7 +595,7 @@ h2.display::after {
 @media (min-width: 900px) {
   .section { padding-block: var(--s-8); }
   .section.board { --pad: var(--s-9); }
-  .hero { padding-block: var(--s-8); }
+  .hero { --pad-end: var(--s-8); padding-block: var(--s-8) var(--pad-end); }
   .partner { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--s-8); }
   .how-grid { grid-template-columns: minmax(0, 36rem) minmax(16rem, 1fr); column-gap: var(--s-8); align-items: start; }
   .steps { grid-column: 1; grid-row: 1; gap: var(--s-9); }
@@ -622,8 +648,9 @@ h2.display::after {
   .js .ring-wrap:not([data-ring="off"]) .ring:not([data-step="3"]) .arc-3 { stroke-dashoffset: 1; }
   .ring.is-all .arc-2 { transition-delay: 0.12s; }
   .ring.is-all .arc-3 { transition-delay: 0.24s; }
-  /* R2 one turn, 700 ms, when the one-shot ring closes on a phone */
-  .js .ring-wrap.is-turning .hand { animation: hand-turn 0.7s var(--ease) both; }
+  /* R2 one turn, 700 ms, when the one-shot ring closes on a phone; linear, so the readout's
+     equal 30-degree steps (main.js) stay under the hand */
+  .js .ring-wrap.is-turning .hand { animation: hand-turn 0.7s linear both; }
 
   /* N1 a frame locks on: ticks 4 px outward, the picture un-tints, the hairline brightens */
   .js .frame { transition: border-color 0.25s var(--ease); }
@@ -653,6 +680,8 @@ h2.display::after {
 
   /* F1 FAQ: the plus turns, the answer opens (the open is opt-in: see below) */
   .faq-list summary::after { transition: transform 0.25s var(--ease); }
+  /* U2 (hero addendum) the soon button's plus turns to a cross as the panel opens */
+  .hero button.btn.is-soon::after { transition: transform 0.25s var(--ease); }
 
   /* E1 the terminal arms: dashed to solid, one ring from the puck */
   .js .term .front { transition: border-color 0.25s var(--ease), visibility 0s; }

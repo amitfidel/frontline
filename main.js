@@ -659,11 +659,17 @@
   if (st && ringMode === "scroll") {
     ring.classList.add("is-all");
     ring.dataset.step = "3"; // the closed ring is the base; the scroll animation draws over it
-    new IntersectionObserver(([e]) => {
+    // The reading is the share of the ring above the 85% line (the CSS travel), in 30 degree
+    // steps. It comes from the observers' own rects, so nothing is measured per frame. The
+    // second observer only notices jumps (a tap to the top) that cross no threshold.
+    const sync = (entries) => {
       if (wide.matches) return;
-      const past = e.rootBounds && e.boundingClientRect.top < e.rootBounds.top;
-      show(past ? 360 : Math.min(12, Math.floor(e.intersectionRatio * 12 + 0.01)) * 30);
-    }, { threshold: Array.from({ length: 13 }, (_, i) => i / 12), rootMargin: "0px 0px -15% 0px" }).observe(ringWrap);
+      const r = entries[entries.length - 1].boundingClientRect;
+      const f = Math.min(1, Math.max(0, (0.85 * innerHeight - r.top) / r.height));
+      show(Math.floor(f * 12 + 0.01) * 30);
+    };
+    new IntersectionObserver(sync, { threshold: Array.from({ length: 13 }, (_, i) => i / 12), rootMargin: "0px 0px -15% 0px" }).observe(ringWrap);
+    new IntersectionObserver(sync, { rootMargin: "0px 0px 100000px 0px" }).observe(ringWrap);
   } else {
     show(0);
     once([ringWrap], () => {
