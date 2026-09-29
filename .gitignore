@@ -1,6 +1,9 @@
 # Lighthouse reports stay local
 qa/*.json
 
+# The publish gate's private word list (see gate.sh). Never committed.
+.gate-private
+
 # scratch
 *.tmp
 *.log

@@ -10,9 +10,11 @@
   const MAIL_SUBJECT = "FRONTLINE, שיתוף פעולה";
 
   // ---- values -------------------------------------------------------------
-  // The prefix is split so the publish grep for unfilled values only ever hits config.js.
-  const MARK = "TODO" + "_";
-  const pending = (v) => typeof v === "string" && v.startsWith(MARK);
+  // Unfilled marker: the config.js prefix in any case, with or without padding,
+  // and its near-misses (a dash, a colon or a space instead of the underscore).
+  // Written as a regex so the publish grep for the literal marker only ever hits config.js.
+  const MARK = /^\s*todo(?![a-z])[\s_:\-]*/i;
+  const pending = (v) => typeof v === "string" && MARK.test(v);
   const blank = (v) => typeof v !== "string" || v.trim() === "" || pending(v);
 
   const httpUrl = (v) => {
@@ -24,9 +26,20 @@
   };
   const email = (v) =>
     !blank(v) && /^[^\s@<>()"',;:]+@[^\s@<>()"',;:]+\.[a-z]{2,}$/i.test(v.trim()) ? v.trim() : null;
+  // WhatsApp needs the full international number with no trunk 0 (wa.me/9725...).
+  // Accepts "+972 50-000-0000", "00972...", "972..." and Israeli local "050-000-0000".
+  // Anything else, including text around the number, returns null and shows a chip.
   const waDigits = (v) => {
     if (blank(v)) return null;
-    const d = v.replace(/\D/g, "");
+    const raw = v.trim();
+    if (!/^\+?[\d\s\-().]+$/.test(raw)) return null;
+    let d = raw.replace(/\D/g, "");
+    if (raw.startsWith("+")) { /* already international */ }
+    else if (d.startsWith("00")) d = d.slice(2);
+    else if (d.startsWith("0")) d = "972" + d.slice(1);
+    else if (!d.startsWith("972")) return null;
+    if (d.startsWith("0") || d.startsWith("9720")) return null;
+    if (d.startsWith("972")) return d.length === 11 || d.length === 12 ? d : null;
     return d.length >= 8 && d.length <= 15 ? d : null;
   };
 
@@ -41,11 +54,15 @@
   const chip = (v, label) => {
     const c = make("span", "todo");
     c.append(make("b", null, "למילוי"));
-    const hint = label || (pending(v) ? v.slice(MARK.length).trim() : "");
+    const hint = label || (pending(v) ? v.replace(MARK, "").trim() : "");
     if (hint) c.append(" · " + hint);
     return c;
   };
-  const badChip = () => chip(null, "לבדוק את הערך ב־config.js");
+  // A filled but malformed value: never a dead link, and the key is named in the console.
+  const badChip = (key) => {
+    console.warn(`FRONTLINE config: ${key} was rejected, check its format in config.js`);
+    return chip(null, "לבדוק את הערך");
+  };
   const valueNode = (key) => (blank(C[key]) ? chip(C[key]) : doc.createTextNode(C[key].trim()));
   const link = (href, content, external) => {
     const a = make("a");
@@ -63,7 +80,7 @@
       a.className = "btn";
       n.replaceWith(a);
     } else if (!blank(C.SIGNUP_URL)) {
-      n.after(badChip());
+      n.after(badChip("SIGNUP_URL"));
     }
   });
 
@@ -122,7 +139,7 @@
     const v = C[key];
     if (blank(v)) { n.replaceWith(chip(v)); return; }
     const out = check[key] ? check[key](v) : v.trim();
-    if (!out) { n.replaceWith(badChip()); return; }
+    if (!out) { n.replaceWith(badChip(key)); return; }
     n.replaceWith(n.hasAttribute("data-ltr") ? ltr(out) : doc.createTextNode(out));
   });
 
@@ -192,19 +209,22 @@
   }
 
   // ---- FAQ --------------------------------------------------------------------
+  // An undecided answer is a {KEY} placeholder. An unfilled answer, or an item
+  // still carrying any "check" field (the retired draft flag), shows only a chip:
+  // no path prints an undecided answer as plain text.
   const faq = doc.getElementById("faq-list");
   list(C.FAQ).forEach((item) => {
-    if (blank(item.q) || blank(item.a)) return;
+    if (blank(item.q)) return;
     const d = make("details");
     const answer = make("div", "answer");
     const p = make("p");
-    item.a.trim().split(/\{([A-Z_]+)\}/).forEach((part, i) => {
-      if (i % 2) p.append(valueNode(part));
-      else if (part) p.append(part);
-    });
-    if (pending(item.check)) {
-      answer.classList.add("is-draft");
-      answer.append(chip(null, "טיוטה, לאשר לפני פרסום"));
+    if (blank(item.a) || item.check != null) {
+      p.append(chip(item.a, pending(item.a) ? "" : "תשובה"));
+    } else {
+      item.a.trim().split(/\{([A-Z_]+)\}/).forEach((part, i) => {
+        if (i % 2) p.append(valueNode(part));
+        else if (part) p.append(part);
+      });
     }
     answer.append(p);
     d.append(make("summary", null, item.q.trim()), answer);
