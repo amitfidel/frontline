@@ -495,7 +495,7 @@
     const stops = [...track.querySelectorAll(".stops li")];
     const api = { onDock: () => {} };
     let dir = 1, travel = 0, marks = [], lit = 0, p = 0;
-    let start = null, dragging = false, moved = false, synthetic = false, width = innerWidth;
+    let start = null, dragging = false, moved = false, synthetic = false;
     const setX = (px) => track.style.setProperty("--x", `${px}px`);
     const measured = () => { if (!marks.length) measure(); };
     const measure = () => {
@@ -590,12 +590,9 @@
       if (puck.tagName === "A") { measured(); settle("is-docking"); setX(dir * travel); light(1); return; } // the link navigates
       dock();
     });
-    addEventListener("resize", () => {
-      if (innerWidth === width || dragging) return;
-      width = innerWidth;
-      measure();
-      if (p) setX(dir * p * travel);
-    }, { passive: true });
+    // A resize only drops the measurements (no layout read here, not even at load);
+    // the next pointerdown, dock or tap measures again.
+    addEventListener("resize", () => { if (!dragging) marks = []; }, { passive: true });
     return api;
   }
   if (term) terminal();
@@ -671,12 +668,19 @@
     new IntersectionObserver(sync, { threshold: Array.from({ length: 13 }, (_, i) => i / 12), rootMargin: "0px 0px -15% 0px" }).observe(ringWrap);
     new IntersectionObserver(sync, { rootMargin: "0px 0px 100000px 0px" }).observe(ringWrap);
   } else {
+    // One move, once the whole ring is above the 85% line, so the turn is seen whole.
+    // A screen too short to hold it closes the ring once half of it shows.
     show(0);
-    once([ringWrap], () => {
+    const io = new IntersectionObserver((entries) => {
+      const e = entries[entries.length - 1];
+      const tall = e.rootBounds && e.boundingClientRect.height > 0.95 * e.rootBounds.height;
+      if (!(e.intersectionRatio >= 0.99 || (tall && e.intersectionRatio >= 0.5))) return;
+      io.disconnect();
       close();
       show(0);
       ringWrap.classList.add("is-turning");
       for (let i = 1; i <= 12; i++) setTimeout(() => show(i * 30), (i * 700) / 12);
-    }, { threshold: 0.5 });
+    }, { threshold: [0.5, 1], rootMargin: "0px 0px -15% 0px" });
+    io.observe(ringWrap);
   }
 })();

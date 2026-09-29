@@ -74,7 +74,7 @@ Rules the code keeps: every scroll-linked motion animates `transform` or `opacit
 | `data-drift` on `.steps` | `on` (set), `off` | The pictures' drift inside the frames. |
 | `data-puck` on `#term` | `on` (set), `off` | `off` shows a plain button instead of the slider (the three verbs as a caption above it); a tap still turns the card. |
 
-**The ring's gate.** The scrubbed arcs animate `stroke-dashoffset`, a paint property. Measured in Chrome at 4x CPU throttle on a 390 px phone profile, crossing the ring in 16 px steps: 10 to 19 ms of main-thread work per frame at the 90th percentile (5 to 6 ms with the ring still), because each change repaints the page layer. The rule was 8 ms or switch, so `data-ring` is `once`, today's one-shot arcs.
+**The ring's gate.** The scrubbed arcs animate `stroke-dashoffset`, a paint property, so they had to stay under 8 ms per frame at 4x CPU throttle. Measured in Chrome on a 390 px phone profile, crossing the ring in 16 px steps, three runs: the 90th-percentile frame is 6.6 to 8.5 ms and the longest ring frames are 10.8 to 12.5 ms (with the ring still: 4.4 ms and 6.5 to 9.2 ms; the ring itself adds about 3 ms at the 90th percentile). Longer ring frames than 8 ms mean the switch, so `data-ring` is `once`, today's one-shot arcs. If a real phone shows the scrubbed ring smooth, `scroll` is one word away.
 
 **The motion table** (the verifier maps every `@keyframes`, `animation`, `transition` and `animation-timeline` in `styles.css` to one of these rows; the rules name their row in a comment). "Fallback" is an engine without `animation-timeline` (Firefox, iOS before 26); "RM" is `prefers-reduced-motion: reduce`.
 
