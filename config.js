@@ -28,7 +28,7 @@ window.FRONTLINE = {
   BACKING_TEXT: "מועדון היזמות החברתית של אגודת הסטודנטים, אוניברסיטת רייכמן", // in the wording the student union approves
 
   // Club policy, used inside the FAQ answers. Each is a full sentence once decided.
-  PARTICIPANT_COST: "אין דמי השתתפות.",
+  PARTICIPANT_COST: "אין דמי השתתפות.",  // its FAQ question was taken off 2026-10-03 (a club is free by default, the team said)
   EXPERIENCE_ANSWER: "עדיפות גבוהה לניסיון בעבודה עם אנשים, ביזמות ובעשייה חברתית.",
   WEEKLY_LOAD: "היקף העבודה בין המפגשים משתנה משבוע לשבוע.",
   SELECTION_STEP: "השלב הבא הוא ראיון.",
@@ -61,13 +61,11 @@ window.FRONTLINE = {
       a: "למי שלומדים ברייכמן, מכל תואר, ורוצים להקים מיזם חברתי." },
     { q: "כמה זמן זה לוקח?",
       a: "סמסטר אחד, מפגש בכל שבוע: {MEETING_DAY_TIME}. {WEEKLY_LOAD}" },
-    { q: "כמה זה עולה?",
-      a: "{PARTICIPANT_COST}" },
     { q: "איך נרשמים?",
       a: "ממלאים את הטופס עד {DEADLINE}. {SELECTION_STEP}" },
     { q: "צריך ניסיון ביזמות?",
       a: "{EXPERIENCE_ANSWER}" },
     { q: "עם מה יוצאים בסוף?",
-      a: "עם מיזם שבניתם והצגתם בערב הסיום, ועם ניסיון של עבודה מבפנים, בתוך ארגון חברתי." }
+      a: "עם מיזם שבניתם והצגתם בערב הסיום מול בורד של מנכ״לים ומשקיעים, ועם ניסיון של עבודה מבפנים, בתוך ארגון חברתי." }
   ]
 };
