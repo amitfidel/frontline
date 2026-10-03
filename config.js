@@ -24,7 +24,7 @@ window.FRONTLINE = {
   SEATS: "15",                                  // participants only, the managers are not counted
   DEADLINE: "27.10",                            // day.month
   ANSWER_DATE: "04.11",                         // day.month
-  MEETING_DAY_TIME: "ימי שלישי, 17:00 עד 20:00",
+  MEETING_DAY_TIME: "ימי שלישי, 18:00 עד 20:00",
   BACKING_TEXT: "מועדון היזמות החברתית של אגודת הסטודנטים, אוניברסיטת רייכמן", // in the wording the student union approves
 
   // Club policy, used inside the FAQ answers. Each is a full sentence once decided.
