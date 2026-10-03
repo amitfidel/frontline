@@ -88,6 +88,13 @@
     if (key !== "MEETING_DAY_TIME") return plain(key, C[key].trim());
     return make("span", "nowrap", C[key].trim());
   };
+  // The pill shows the handle straight from the URL's own path, so the two can never
+  // drift: whoever changes INSTAGRAM_URL changes what the pill shows, with no second
+  // place to edit. href is already a validated absolute URL (httpUrl), so this never throws.
+  const igHandle = (href) => {
+    const seg = new URL(href).pathname.split("/").filter(Boolean).pop();
+    return seg ? "@" + seg : null;
+  };
   const link = (href, content, external) => {
     const a = make("a");
     a.href = href;
@@ -110,60 +117,23 @@
 
   // ---- the sign-up panel: one builder for the hero panel and the terminal's back ----
   // Each action exists only if its value is real, so the panel never holds a dead link.
-  const pad2 = (n) => String(n).padStart(2, "0");
-  const ymd = (d) => `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
-  // Save the date: only when DEADLINE is a real day.month whose date this year is today or
-  // later and at most 180 days away (on the visitor's own clock). After the deadline, or
-  // too early to know the year, the action is absent: never a date in the wrong year.
-  const icsHref = () => {
-    if (blank(C.DEADLINE)) return null;
-    const m = /^(\d{1,2})\.(\d{1,2})$/.exec(C.DEADLINE.trim());
-    if (!m) return null;
-    const day = Number(m[1]), month = Number(m[2]);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const date = new Date(now.getFullYear(), month - 1, day);
-    if (date.getMonth() !== month - 1 || date.getDate() !== day) return null;
-    const days = Math.round((date - today) / 86400000);
-    if (days < 0 || days > 180) return null;
-    const next = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-    const canonical = doc.querySelector('link[rel="canonical"]');
-    const url = canonical ? canonical.href : location.href.split("#")[0];
-    const ics = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//FRONTLINE//save the date//HE",
-      "BEGIN:VEVENT",
-      `UID:frontline-deadline-${ymd(date)}`,
-      `DTSTAMP:${now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")}`,
-      `DTSTART;VALUE=DATE:${ymd(date)}`,
-      `DTEND;VALUE=DATE:${ymd(next)}`,
-      "SUMMARY:FRONTLINE\\, יום אחרון להרשמה",
-      `URL:${url}`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ];
-    return "data:text/calendar;charset=utf-8," + encodeURIComponent(ics.join("\r\n") + "\r\n");
-  };
+  // Each is a short label (what the action is) over its own pill button (the tap target),
+  // so neither reads as a dead sentence and both are unmistakably tappable.
   const actionList = () => {
     const acts = [];
     const ig = httpUrl(C.INSTAGRAM_URL);
-    if (ig) acts.push(link(ig, "עקבו אחרינו באינסטגרם, נעדכן שם כשהטופס עולה", true));
-    const ics = icsHref();
-    if (ics) {
-      const a = link(ics, "שמרו את ה־");
-      a.append(bdi(C.DEADLINE.trim(), "rtl"), " ביומן");
-      a.download = "frontline.ics";
-      acts.push(a);
+    if (ig) {
+      const handle = igHandle(ig);
+      acts.push(["עקבו אחרינו באינסטגרם", link(ig, handle ? ltr(handle) : "לעמוד שלנו", true)]);
     }
     const wa = waDigits(C.PARTNER_WHATSAPP);
-    if (wa) acts.push(link(`https://wa.me/${wa}?text=${encodeURIComponent(WA_STUDENT)}`, "כתבו לנו בוואטסאפ", true));
+    if (wa) acts.push(["כתבו לנו בוואטסאפ", link(`https://wa.me/${wa}?text=${encodeURIComponent(WA_STUDENT)}`, "שלחו הודעה", true)]);
     if (!acts.length) return make("p", "acts-none", "הקישור יופיע כאן כשההרשמה תיפתח");
     const ul = make("ul", "acts");
-    for (const a of acts) {
-      a.classList.add("act");
-      const li = make("li");
-      li.append(a);
+    for (const [label, a] of acts) {
+      a.classList.add("btn", "btn-line", "act-pill");
+      const li = make("li", "act-group");
+      li.append(make("p", "act-label", label), a);
       ul.append(li);
     }
     return ul;
@@ -492,7 +462,7 @@
       control.setAttribute("aria-expanded", String(on));
       front.inert = on;
       back.inert = !on;
-      (on ? back.querySelector(".act") || again : control).focus({ preventScroll: true }); // the first action
+      (on ? back.querySelector(".act-pill") || again : control).focus({ preventScroll: true }); // the first action
       if (on && slider) setTimeout(slider.reset, reduce ? 0 : 520); // back to the start, unseen
     };
     again.addEventListener("click", () => flip(false));

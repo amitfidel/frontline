@@ -38,7 +38,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `PARTNER_EMAIL` | The club's email, for the partner "מייל" button and the footer. Never a personal address. | המייל של המועדון, לכפתור "מייל" ולתחתית הדף. לא כתובת אישית. | an email address |
 | `PARTNER_WHATSAPP` | The club's WhatsApp number: the partner "וואטסאפ" button (partner opener), and, in the sign-up panel, "כתבו לנו בוואטסאפ" for students (its own opener, `WA_STUDENT` in `main.js`). Never a personal number. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון, לשותפים ולסטודנטים. לא מספר אישי. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
 | `SEATS` | Places for participants only; the four managers are not counted. Shown as "15 מקומות". A number only: the page adds the word, so anything else is a "לבדוק את הערך" chip. | מספר המקומות למשתתפים בלבד, בלי המנהלים. מספר בלבד, המילה "מקומות" נוספת לבד. | a number |
-| `DEADLINE` | Last day to apply (hero, FAQ, the terminal's caption). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. As `day.month` it also gives the panel its save-the-date, a calendar file made in the browser, offered only when this year's date is today or later and at most 180 days away on the visitor's own clock; after the deadline, or in words, that action is absent. | התאריך האחרון להרשמה. בפורמט יום.חודש הוא נותן גם את "שמרו את ה־27.10 ביומן" בפאנל, רק כשהתאריך השנה עוד לפנינו ובתוך 180 יום. | day.month, e.g. `27.10` |
+| `DEADLINE` | Last day to apply (hero, FAQ, the terminal's caption). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. | התאריך האחרון להרשמה. | day.month, e.g. `27.10` |
 | `ANSWER_DATE` | When applicants hear back (FAQ). Same handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
 | `MEETING_DAY_TIME` | Weekly meeting day and time (hero facts and FAQ). | יום ושעת המפגש השבועי. | day and time |
 | `BACKING_TEXT` | The backing line under the logo, in the wording the student union approves. Filling it also shows `REICHMAN_LOGO` above it. | שורת הגיבוי מתחת ללוגו, בנוסח שהאגודה מאשרת. מילוי השורה מציג גם את לוגו האוניברסיטה. | free text |
@@ -46,7 +46,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `EXPERIENCE_ANSWER` | FAQ "צריך ניסיון ביזמות?". Filled with the managers' own bar. The insurance go condition does not apply to it: it promises no physical work. | האם נדרש ניסיון. תנאי הביטוח לא חל עליו, כי הוא לא מבטיח עבודה פיזית. | sentence |
 | `WEEKLY_LOAD` | FAQ "כמה זמן זה לוקח?": the work expected between meetings. | היקף העבודה בין המפגשים. | sentence |
 | `SELECTION_STEP` | FAQ "איך נרשמים?": what happens after the form. | שלב המיון אחרי הטופס. | sentence |
-| `INSTAGRAM_URL` | Instagram profile: the footer icon, and the first action of the sign-up panel. | קישור לאינסטגרם, בתחתית הדף ובפאנל ההרשמה. | `https://...` |
+| `INSTAGRAM_URL` | Instagram profile: the footer icon, and the sign-up panel's own pill, which reads its visible handle straight from this URL's last path segment (so the two can never drift). | קישור לאינסטגרם: סמל התחתית, והכפתור בפאנל ההרשמה, ששם המשתמש שמוצג בו נקרא ישירות מתוך הקישור הזה. | `https://...` |
 | `AGUDA_URL` | Student union page (footer). Makes the union logo a link. | קישור לאגודת הסטודנטים. הופך את לוגו האגודה לקישור. | `https://...` |
 | `AGUDA_LOGO` | Union logo file in `assets/img/`, first in the footer. It shows as soon as it is set; until `AGUDA_URL` is real it is a plain image beside the "קישור לאגודה" chip, never a dead link. Without a file the footer link reads "אגודת הסטודנטים". Do not scrape their logo. | קובץ לוגו האגודה. מופיע מיד, ועד שיש `AGUDA_URL` אמיתי הוא תמונה בלי קישור. | `assets/img/aguda.webp` |
 | `REICHMAN_LOGO` | Reichman University logo file in `assets/img/`. **It appears only above the backing line, and only once `BACKING_TEXT` is filled.** While `BACKING_TEXT` is still a chip the logo is nowhere on the page, because on its own it would claim official backing in wording the student union has not approved. Do not add it anywhere else on the page. | לוגו אוניברסיטת רייכמן. **מופיע רק מעל שורת הגיבוי, ורק אחרי שממלאים את `BACKING_TEXT`.** עד אז הוא לא מופיע בכלל, כי לבדו הוא רומז על גיבוי רשמי בנוסח שהאגודה עוד לא אישרה. לא מוסיפים אותו לשום מקום אחר בדף. | `assets/img/reichman.webp` |
@@ -159,7 +159,7 @@ Then by hand: open the page and search for **לבדוק**. It must find nothing.
 2. `gh auth status` shows `amitfidel` active, then `gh repo create amitfidel/frontline --public --source=. --push`.
 3. GitHub, Settings, Pages: deploy from branch `main`, folder `/ (root)`. The site appears at `https://amitfidel.github.io/frontline/`.
 4. Fill `config.js`, `SIGNUP_URL` last. Run `sh gate.sh`. Commit, push. The same day SIGNUP_URL goes live: post the form on Instagram, and answer every WhatsApp message that mentions FRONTLINE (search the chat for the word).
-5. Live checks: paste the link into a WhatsApp chat to yourself and check the card, open GoatCounter, run Lighthouse on the live URL. On a phone, inside the Instagram browser: slide the puck the whole way, then scroll with a thumb that starts on the track; tap "שמרו את ה־27.10 ביומן" (it works in Safari and Chrome proper; some in-app browsers ignore calendar files).
+5. Live checks: paste the link into a WhatsApp chat to yourself and check the card, open GoatCounter, run Lighthouse on the live URL. On a phone, inside the Instagram browser: slide the puck the whole way, then scroll with a thumb that starts on the track; tap the Instagram and WhatsApp pills in the panel and confirm each opens the right app.
 6. The day after DEADLINE: move DEADLINE and ANSWER_DATE to the next cohort, or take the page down.
 
 Working from a fresh clone? The commit identity is set per folder, so set it before the first commit there (the gate fails until you do):
@@ -169,7 +169,7 @@ git config user.name "amitfidel"
 git config user.email "187608176+amitfidel@users.noreply.github.com"
 ```
 
-If the repo name is not `frontline`, update the three absolute URLs in the `<head>` of `index.html` (`canonical`, `og:url`, `og:image`) and the allowed forms in `gate.sh`. All other paths are relative (the save-the-date file takes its link from `canonical`).
+If the repo name is not `frontline`, update the three absolute URLs in the `<head>` of `index.html` (`canonical`, `og:url`, `og:image`) and the allowed forms in `gate.sh`. All other paths are relative.
 
 ## Design tokens
 

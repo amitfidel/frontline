@@ -192,6 +192,10 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .hero button.btn.is-soon[aria-expanded="true"]::after { transform: rotate(45deg); }
 .cta-row .btn { inline-size: min(100%, 22rem); }
 .text-link { display: inline-flex; align-items: center; min-block-size: 2.75rem; font-weight: 700; }
+/* The hero's own link to #partners (Owner, 2026-10-03: "bigger, more emphasized"):
+   the same size as the board's own sub-heads (--t-h3), so it reads as a real second
+   option under the button, not a footnote. */
+.cta-row .text-link { font-size: var(--t-h3); }
 /* The first screen on a phone. The backing line and the Owner's lead made the hero about 120 px
    taller, so below 900 px its rhythm is one spacing step tighter and the mark smaller: the
    sign-up button and the partner link stay inside an in-app browser (about 700 px tall), and
@@ -215,16 +219,12 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .soon-inner > * { margin-block-start: var(--s-3); }
 .acts { padding: 0; list-style: none; }
 .acts li + li { border-block-start: 1px solid var(--hair); }
-.act {
-  display: block;
-  padding-block: var(--s-3); /* one line is 48 px tall */
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: center;
-  text-decoration: none;
-  text-wrap: balance;
-}
-.act:hover { text-decoration: underline; }
+/* Each action is a short label over its own pill button (main.js: .act-pill is a plain
+   hook, styled by .btn.btn-line; inside the terminal's dark back face, .term's own
+   cascade already refits .btn there, so no extra colour rule is needed for it here). */
+.act-group { padding-block: var(--s-3); text-align: center; }
+.act-label { margin-block-end: var(--s-2); font-weight: 700; line-height: 1.4; text-wrap: balance; }
+.back .act-label { text-align: start; color: var(--sand); }
 .acts-none { padding-block: var(--s-3); color: var(--ink-2); text-wrap: balance; }
 
 /* ---- section heads ------------------------------------------------------------ */
@@ -593,7 +593,6 @@ h2.display::after {
 .back-h { font-size: var(--t-h3); font-weight: 700; line-height: 1.3; color: var(--sand); }
 .back .acts { margin-block-start: var(--s-2); }
 .back .acts li + li { border-block-start-color: rgb(232 137 90 / 0.22); }
-.back .act { text-align: start; color: var(--copper-glow); }
 .back .acts-none { margin-block-start: var(--s-2); color: var(--mute); }
 .flip-back {
   flex: none;

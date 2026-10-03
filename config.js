@@ -13,7 +13,7 @@ window.FRONTLINE = {
   SIGNUP_URL: "TODO_קישור לטופס ההרשמה",        // full https:// link; last thing to fill
   PARTNER_EMAIL: "Frontline.club26@gmail.com",  // the club's own address
   PARTNER_WHATSAPP: "+972587716766",            // +972 5X-XXX-XXXX or 05X-XXX-XXXX
-  INSTAGRAM_URL: "https://www.instagram.com/Front_line_club/", // full https:// link
+  INSTAGRAM_URL: "https://www.instagram.com/front_line_club/", // full https:// link
   AGUDA_URL: "TODO_קישור לאגודה",               // full https:// link
   AGUDA_LOGO: "assets/img/aguda.webp",         // shows unlinked until AGUDA_URL is real
   // The university logo appears only beside BACKING_TEXT, and only once that
