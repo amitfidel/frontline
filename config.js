@@ -23,7 +23,7 @@ window.FRONTLINE = {
   // Facts about the cohort.
   SEATS: "15",                                  // participants only, the managers are not counted
   DEADLINE: "27.10",                            // day.month
-  ANSWER_DATE: "04.11",                         // day.month
+  ANSWER_DATE: "04.11",                         // day.month; shown nowhere since 2026-10-03 (the Owner took the answers date off)
   MEETING_DAY_TIME: "ימי שלישי, 18:00 עד 20:00",
   BACKING_TEXT: "מועדון היזמות החברתית של אגודת הסטודנטים, אוניברסיטת רייכמן", // in the wording the student union approves
 
@@ -64,7 +64,7 @@ window.FRONTLINE = {
     { q: "כמה זה עולה?",
       a: "{PARTICIPANT_COST}" },
     { q: "איך נרשמים?",
-      a: "ממלאים את הטופס עד {DEADLINE}. {SELECTION_STEP} תשובות עד {ANSWER_DATE}." },
+      a: "ממלאים את הטופס עד {DEADLINE}. {SELECTION_STEP}" },
     { q: "צריך ניסיון ביזמות?",
       a: "{EXPERIENCE_ANSWER}" },
     { q: "עם מה יוצאים בסוף?",
