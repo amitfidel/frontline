@@ -10,11 +10,11 @@
  */
 window.FRONTLINE = {
   // Links and contact. Use the club's identity, never a personal number.
-  SIGNUP_URL: "TODO_קישור לטופס ההרשמה",        // full https:// link; last thing to fill
+  SIGNUP_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the union's club enrolment form (the Owner, 2026-10-04)
   PARTNER_EMAIL: "Frontline.club26@gmail.com",  // the club's own address
   PARTNER_WHATSAPP: "+972587716766",            // +972 5X-XXX-XXXX or 05X-XXX-XXXX
   INSTAGRAM_URL: "https://www.instagram.com/front_line_club/", // full https:// link
-  AGUDA_URL: "TODO_קישור לאגודה",               // full https:// link
+  AGUDA_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the same link as SIGNUP_URL, as the Owner decided (one link for both)
   AGUDA_LOGO: "assets/img/aguda.webp",         // shows unlinked until AGUDA_URL is real
   // The university logo appears only beside BACKING_TEXT, and only once that
   // line is filled: on its own it would claim backing nobody approved yet.
