@@ -9,6 +9,10 @@
  * Full key-by-key guide (Hebrew and English): README.md.
  */
 window.FRONTLINE = {
+  // Coffee-shop collaboration.
+  COFFEE_SHOP_NAME: "טלק",
+  COFFEE_OFFER: "1+1 קפה",
+
   // Links and contact. Use the club's identity, never a personal number.
   SIGNUP_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the union's club enrolment form (the Owner, 2026-10-04)
   PARTNER_EMAIL: "Frontline.club26@gmail.com",  // the club's own address

@@ -115,6 +115,16 @@
     });
   };
 
+  // Coffee collaboration card: native dialog supplies Escape handling and a
+  // modal focus boundary; the close button and backdrop both dismiss it.
+  const coffeeDialog = doc.querySelector("#coffee-card");
+  const coffeeTrigger = doc.querySelector(".coffee-trigger");
+  coffeeTrigger?.addEventListener("click", () => coffeeDialog?.showModal());
+  coffeeDialog?.querySelector(".coffee-close")?.addEventListener("click", () => coffeeDialog.close());
+  coffeeDialog?.addEventListener("click", (event) => {
+    if (event.target === coffeeDialog) coffeeDialog.close();
+  });
+
   // ---- the sign-up panel: one builder for the hero panel and the terminal's back ----
   // Each action exists only if its value is real, so the panel never holds a dead link.
   // Each is a short label (what the action is) over its own pill button (the tap target),

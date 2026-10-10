@@ -66,6 +66,70 @@
 }
 [dir="rtl"] { --dir: -1; }
 
+/* ---- Talek coffee collaboration --------------------------------------------- */
+.coffee-trigger {
+  position: fixed;
+  z-index: 20;
+  inset-block-start: max(0.75rem, env(safe-area-inset-top));
+  inset-inline-start: max(0.75rem, env(safe-area-inset-left));
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 3.25rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.45rem;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 4px 18px rgb(63 46 39 / 0.12);
+  font-weight: 700;
+  cursor: pointer;
+}
+.coffee-trigger img { inline-size: 2.45rem; block-size: 2.45rem; object-fit: cover; border-radius: 50%; }
+.coffee-trigger:hover { border-color: var(--copper); }
+.coffee-dialog {
+  inline-size: min(28rem, calc(100vw - 2rem));
+  max-inline-size: none;
+  max-block-size: calc(100dvh - 2rem);
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--ink);
+}
+.coffee-dialog::backdrop { background: rgb(27 19 16 / 0.62); backdrop-filter: blur(3px); }
+.coffee-card {
+  position: relative;
+  padding: clamp(1.5rem, 7vw, 2.5rem);
+  border: 1px solid var(--hair);
+  border-radius: 1rem;
+  background: var(--paper);
+  text-align: center;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.25);
+}
+.coffee-close {
+  position: absolute;
+  inset-block-start: 0.7rem;
+  inset-inline-end: 0.8rem;
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: 1px solid var(--hair);
+  border-radius: 50%;
+  background: transparent;
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.coffee-logo { inline-size: 5.5rem; block-size: 5.5rem; margin: 0 auto var(--s-4); border-radius: 1rem; }
+.coffee-kicker { color: var(--rust); font-size: var(--t-sm); font-weight: 700; }
+.coffee-card h2 { margin-block: var(--s-2); font-size: clamp(2rem, 8vw, 2.75rem); line-height: 1.1; }
+.coffee-reward { margin-block: var(--s-5); padding: 1.1rem 0.8rem; border-radius: var(--radius); background: var(--board); color: var(--sand); font-size: clamp(2.5rem, 12vw, 3.5rem); font-weight: 700; line-height: 1.1; }
+.coffee-instruction { font-size: var(--t-sm); font-weight: 700; }
+.coffee-dialog .todo { white-space: normal; }
+
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {

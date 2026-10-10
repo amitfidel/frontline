@@ -38,6 +38,21 @@
 </head>
 <body>
 
+<button class="coffee-trigger" type="button" aria-haspopup="dialog" aria-controls="coffee-card">
+  <img src="assets/img/talek-logo.png" alt="" width="44" height="44">
+  <span>הטבת קפה</span>
+</button>
+<dialog class="coffee-dialog" id="coffee-card" aria-labelledby="coffee-title">
+  <div class="coffee-card">
+    <button class="coffee-close" type="button" aria-label="סגירה">×</button>
+    <img class="coffee-logo" src="assets/img/talek-logo.png" alt="טלק קפה" width="192" height="192">
+    <p class="coffee-kicker">FRONTLINE × טלק</p>
+    <h2 id="coffee-title"><span data-cfg="COFFEE_SHOP_NAME">למילוי · שם בית הקפה</span></h2>
+    <p class="coffee-reward" data-cfg="COFFEE_OFFER">למילוי · ההטבה</p>
+    <p class="coffee-instruction">הציגו את הכרטיס בבית הקפה החדש בתל אביב</p>
+  </div>
+</dialog>
+
 <header class="hero">
   <div class="wrap hero-inner">
     <img class="mark" src="assets/img/mark.webp" width="440" height="404" alt="" fetchpriority="high">
