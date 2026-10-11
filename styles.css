@@ -128,6 +128,8 @@
 .coffee-card h2 { margin-block: var(--s-2); font-size: clamp(2rem, 8vw, 2.75rem); line-height: 1.1; }
 .coffee-reward { margin-block: var(--s-5); padding: 1.1rem 0.8rem; border-radius: var(--radius); background: var(--board); color: var(--sand); font-size: clamp(2.5rem, 12vw, 3.5rem); font-weight: 700; line-height: 1.1; }
 .coffee-instruction { font-size: var(--t-sm); font-weight: 700; }
+.coffee-details { display: grid; gap: 0.3rem; margin-block-start: var(--s-4); font-size: var(--t-sm); }
+.coffee-details a { color: var(--rust); font-weight: 700; text-underline-offset: 0.2em; }
 .coffee-dialog .todo { white-space: normal; }
 
 *, *::before, *::after { box-sizing: border-box; }
