@@ -119,7 +119,11 @@
   // modal focus boundary; the close button and backdrop both dismiss it.
   const coffeeDialog = doc.querySelector("#coffee-card");
   const coffeeTrigger = doc.querySelector(".coffee-trigger");
-  coffeeTrigger?.addEventListener("click", () => coffeeDialog?.showModal());
+  coffeeTrigger?.addEventListener("click", () => {
+    if (!coffeeDialog) return;
+    coffeeDialog.showModal();
+    window.gtag?.("event", "coffee_offer_open");
+  });
   coffeeDialog?.querySelector(".coffee-close")?.addEventListener("click", () => coffeeDialog.close());
   coffeeDialog?.addEventListener("click", (event) => {
     if (event.target === coffeeDialog) coffeeDialog.close();

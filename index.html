@@ -31,6 +31,14 @@
 <link rel="preload" href="assets/fonts/plex-700-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/plex-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
+<!-- Google Analytics: page views and coffee offer opens. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0ZTH65DTV1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){window.dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-0ZTH65DTV1');
+</script>
 <!-- blocking="render": the first paint already shows the filled values, so nothing jumps.
      Browsers without it paint first and fill a moment later, as before. -->
 <script src="config.js" defer blocking="render"></script>

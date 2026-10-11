@@ -1,8 +1,8 @@
 # FRONTLINE, landing page
 
-One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step, no framework, no external requests except the visit counter once it is switched on.
+One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step or framework. Google Analytics measures page views and coffee-offer opens; GoatCounter is optional for privacy-friendly visit counts.
 
-דף נחיתה סטטי אחד בעברית. אין שלב בנייה, אין ספריות, ואין פניות לשרתים חיצוניים חוץ ממונה הביקורים, אחרי שמפעילים אותו.
+דף נחיתה סטטי אחד בעברית. אין שלב בנייה ואין ספריות. Google Analytics מודד צפיות בעמוד ופתיחות של הטבת הקפה; אפשר להפעיל גם את GoatCounter לספירת ביקורים ידידותית לפרטיות.
 
 ## Files
 
@@ -50,7 +50,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `AGUDA_URL` | Student union page (footer). Makes the union logo a link. | קישור לאגודת הסטודנטים. הופך את לוגו האגודה לקישור. | `https://...` |
 | `AGUDA_LOGO` | Union logo file in `assets/img/`, first in the footer. It shows as soon as it is set; until `AGUDA_URL` is real it is a plain image beside the "קישור לאגודה" chip, never a dead link. Without a file the footer link reads "אגודת הסטודנטים". Do not scrape their logo. | קובץ לוגו האגודה. מופיע מיד, ועד שיש `AGUDA_URL` אמיתי הוא תמונה בלי קישור. | `assets/img/aguda.webp` |
 | `REICHMAN_LOGO` | Reichman University logo file in `assets/img/`. **It appears only above the backing line, and only once `BACKING_TEXT` is filled.** While `BACKING_TEXT` is still a chip the logo is nowhere on the page, because on its own it would claim official backing in wording the student union has not approved. Do not add it anywhere else on the page. | לוגו אוניברסיטת רייכמן. **מופיע רק מעל שורת הגיבוי, ורק אחרי שממלאים את `BACKING_TEXT`.** עד אז הוא לא מופיע בכלל, כי לבדו הוא רומז על גיבוי רשמי בנוסח שהאגודה עוד לא אישרה. לא מוסיפים אותו לשום מקום אחר בדף. | `assets/img/reichman.webp` |
-| `GOATCOUNTER_CODE` | Site code from goatcounter.com (no cookies, no consent banner). Until it is set, no counter script loads. | הקוד מ־goatcounter.com. עד שממלאים, אין מונה. | the code only, not the full URL |
+| `GOATCOUNTER_CODE` | Optional site code from goatcounter.com (no cookies, no consent banner). Until it is set, no counter script loads. | קוד אופציונלי מ־goatcounter.com. עד שממלאים, אין מונה. | the code only, not the full URL |
 | `SPEAKERS[]` | Speakers who confirmed in writing: `{ name, role, org, photo }`. Empty shows "שמות האורחים יתפרסמו אחרי שיאשרו.". | מרצים שאישרו בכתב. | array |
 | `PARTNERS[]` | Partner organisations that confirmed in writing: `{ name, url }`. | ארגונים שאישרו בכתב. | array |
 | `TEAM[]` | The four managers, in card order: `{ name, role, bio, photo }` (`bio` replaced the old `line`). Each manager fills and confirms their own name, role and bio, in the first person. **Keep each entry on one physical line** (a `\n` inside `bio` starts a new line on the card): the gate's one exception is keyed to a whole line. A blank bio shows a "למילוי · ביוגרפיה" chip and no disclosure; without a photo the card shows initials. Never an AI face for a real person. | ארבעת המנהלים: שם, תפקיד, ביוגרפיה, תמונה. כל מנהל ומנהלת ממלאים ומאשרים את הרשומה שלהם, בגוף ראשון. כל רשומה בשורה אחת. | array |
