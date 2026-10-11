@@ -4,7 +4,7 @@
 (() => {
   "use strict";
   const C = window.FRONTLINE || {};
-  // SEATS: 15 works as well as "15". Every other key is text, so a bare number
+  // SEATS: 20 works as well as "20". Every other key is text, so a bare number
   // there (BACKING_TEXT: 0) stays unfilled instead of printing as the line.
   if (typeof C.SEATS === "number") C.SEATS = String(C.SEATS);
   const doc = document;
