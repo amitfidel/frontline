@@ -1,8 +1,8 @@
 # FRONTLINE, landing page
 
-One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step or framework. Google Analytics measures page views and coffee-offer opens; GoatCounter is optional for privacy-friendly visit counts.
+One static Hebrew (RTL) page: HTML, CSS and a little vanilla JS. No build step or framework. Google Analytics measures page views, coffee-offer opens, and clicks on the top Instagram and Ofek WhatsApp links; GoatCounter is optional for privacy-friendly visit counts.
 
-דף נחיתה סטטי אחד בעברית. אין שלב בנייה ואין ספריות. Google Analytics מודד צפיות בעמוד ופתיחות של הטבת הקפה; אפשר להפעיל גם את GoatCounter לספירת ביקורים ידידותית לפרטיות.
+דף נחיתה סטטי אחד בעברית. אין שלב בנייה ואין ספריות. Google Analytics מודד צפיות בעמוד, פתיחות של הטבת הקפה ולחיצות על קישורי האינסטגרם והוואטסאפ בראש הדף; אפשר להפעיל גם את GoatCounter לספירת ביקורים ידידותית לפרטיות.
 
 ## Files
 
@@ -36,7 +36,8 @@ Anything that is club policy and not yet decided lives in its own key and appear
 |---|---|---|---|
 | `SIGNUP_URL` | Sign-up form link. Until it is real, the hero button reads "ההרשמה נפתחת בקרוב" and unfolds the sign-up panel, and the terminal's puck turns the card to the same actions. Once it is real, the hero button and the puck are links to the form. Fill it **last**. | קישור לטופס ההרשמה. עד שהוא אמיתי, על הכפתור כתוב "ההרשמה נפתחת בקרוב", והוא פותח פאנל עם הפעולות האמיתיות. גם הדמות שמחליקים בסוף הדף הופכת את הכרטיס לאותן פעולות. ממלאים אחרון. | `https://...` |
 | `PARTNER_EMAIL` | The club's email, for the partner "מייל" button and the footer. Never a personal address. | המייל של המועדון, לכפתור "מייל" ולתחתית הדף. לא כתובת אישית. | an email address |
-| `PARTNER_WHATSAPP` | The club's WhatsApp number: the partner "וואטסאפ" button (partner opener), and, in the sign-up panel, "כתבו לנו בוואטסאפ" for students (its own opener, `WA_STUDENT` in `main.js`). Never a personal number. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון, לשותפים ולסטודנטים. לא מספר אישי. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
+| `PARTNER_WHATSAPP` | The club's WhatsApp number: the partner "וואטסאפ" button and sign-up panel. Israeli local form is converted for you. | מספר הוואטסאפ של המועדון, לשותפים ולסטודנטים. אפשר לכתוב גם בפורמט מקומי. | `+972 5X-XXX-XXXX` or `05X-XXX-XXXX` |
+| `OFEK_WHATSAPP` | Ofek's WhatsApp number for the prominent top link. Its clicks are measured as `ofek_whatsapp_click`. | מספר הוואטסאפ של אופק לקישור בראש הדף. לחיצות נמדדות באירוע `ofek_whatsapp_click`. | `+972 5X-XXX-XXXX` |
 | `SEATS` | Places for participants only; the four managers are not counted. Shown as "20 מקומות". A number only: the page adds the word, so anything else is a "לבדוק את הערך" chip. | מספר המקומות למשתתפים בלבד, בלי המנהלים. מספר בלבד, המילה "מקומות" נוספת לבד. | a number |
 | `DEADLINE` | Last day to apply (hero, FAQ, the terminal's caption). Kept in its own right-to-left run (a `<bdi>`): the digits of `27.10` never reorder, and a date in words such as `27 באוקטובר` reads in the right order. | התאריך האחרון להרשמה. | day.month, e.g. `27.10` |
 | `ANSWER_DATE` | When applicants hear back (FAQ). Same handling as `DEADLINE`. | מתי עונים למועמדים. | day.month, e.g. `04.11` |
@@ -46,7 +47,7 @@ Anything that is club policy and not yet decided lives in its own key and appear
 | `EXPERIENCE_ANSWER` | FAQ "צריך ניסיון ביזמות?". Filled with the managers' own bar. The insurance go condition does not apply to it: it promises no physical work. | האם נדרש ניסיון. תנאי הביטוח לא חל עליו, כי הוא לא מבטיח עבודה פיזית. | sentence |
 | `WEEKLY_LOAD` | FAQ "כמה זמן זה לוקח?": the work expected between meetings. | היקף העבודה בין המפגשים. | sentence |
 | `SELECTION_STEP` | FAQ "איך נרשמים?": what happens after the form. | שלב המיון אחרי הטופס. | sentence |
-| `INSTAGRAM_URL` | Instagram profile: the footer icon, and the sign-up panel's own pill, which reads its visible handle straight from this URL's last path segment (so the two can never drift). | קישור לאינסטגרם: סמל התחתית, והכפתור בפאנל ההרשמה, ששם המשתמש שמוצג בו נקרא ישירות מתוך הקישור הזה. | `https://...` |
+| `INSTAGRAM_URL` | FRONTLINE Instagram profile: the footer icon, sign-up panel pill, and the prominent top link. Top link clicks are measured as `instagram_profile_click`. | קישור האינסטגרם של FRONTLINE: סמל התחתית והכפתורים בפאנל ובראש הדף. לחיצות על הקישור העליון נמדדות באירוע `instagram_profile_click`. | `https://...` |
 | `AGUDA_URL` | Student union page (footer). Makes the union logo a link. | קישור לאגודת הסטודנטים. הופך את לוגו האגודה לקישור. | `https://...` |
 | `AGUDA_LOGO` | Union logo file in `assets/img/`, first in the footer. It shows as soon as it is set; until `AGUDA_URL` is real it is a plain image beside the "קישור לאגודה" chip, never a dead link. Without a file the footer link reads "אגודת הסטודנטים". Do not scrape their logo. | קובץ לוגו האגודה. מופיע מיד, ועד שיש `AGUDA_URL` אמיתי הוא תמונה בלי קישור. | `assets/img/aguda.webp` |
 | `REICHMAN_LOGO` | Reichman University logo file in `assets/img/`. **It appears only above the backing line, and only once `BACKING_TEXT` is filled.** While `BACKING_TEXT` is still a chip the logo is nowhere on the page, because on its own it would claim official backing in wording the student union has not approved. Do not add it anywhere else on the page. | לוגו אוניברסיטת רייכמן. **מופיע רק מעל שורת הגיבוי, ורק אחרי שממלאים את `BACKING_TEXT`.** עד אז הוא לא מופיע בכלל, כי לבדו הוא רומז על גיבוי רשמי בנוסח שהאגודה עוד לא אישרה. לא מוסיפים אותו לשום מקום אחר בדף. | `assets/img/reichman.webp` |

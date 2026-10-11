@@ -10,6 +10,7 @@
   const doc = document;
   const WA_OPENER = "שלום, הגעתי מהאתר של FRONTLINE ואשמח לשמוע על שיתוף פעולה.";
   const WA_STUDENT = "היי, אשמח לדעת כשההרשמה ל־FRONTLINE נפתחת";
+  const WA_OFEK = "וואו איזה מועדון מטורף FrontLIne! תרשום אותי עכשיו!";
   const MAIL_SUBJECT = "FRONTLINE, שיתוף פעולה";
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -129,6 +130,24 @@
     if (event.target === coffeeDialog) coffeeDialog.close();
   });
 
+  // Quick social links stay at the top of the first screen. Keep their targets
+  // in config.js and record each platform click as its own GA4 event.
+  const trackTopLink = (linkEl, href, eventName) => {
+    if (!linkEl || !href) { linkEl?.remove(); return; }
+    linkEl.href = href;
+    linkEl.target = "_blank";
+    linkEl.rel = "noopener noreferrer";
+    linkEl.addEventListener("click", () => window.gtag?.("event", eventName, { link_location: "hero" }));
+  };
+  const instagramUrl = httpUrl(C.INSTAGRAM_URL);
+  const ofekWhatsapp = waDigits(C.OFEK_WHATSAPP);
+  trackTopLink(doc.querySelector('[data-hero-social="instagram"]'), instagramUrl, "instagram_profile_click");
+  trackTopLink(
+    doc.querySelector('[data-hero-social="whatsapp"]'),
+    ofekWhatsapp && `https://wa.me/${ofekWhatsapp}?text=${encodeURIComponent(WA_OFEK)}`,
+    "ofek_whatsapp_click"
+  );
+
   // ---- the sign-up panel: one builder for the hero panel and the terminal's back ----
   // Each action exists only if its value is real, so the panel never holds a dead link.
   // Each is a short label (what the action is) over its own pill button (the tap target),
@@ -231,6 +250,7 @@
   const check = {
     PARTNER_EMAIL: email,
     PARTNER_WHATSAPP: (v) => (waDigits(v) ? v.trim() : null),
+    OFEK_WHATSAPP: (v) => (waDigits(v) ? v.trim() : null),
     INSTAGRAM_URL: httpUrl,
     AGUDA_URL: httpUrl,
     // "מקומות" comes with the number, not from index.html, so a chip there never reads "מקומות מקומות".

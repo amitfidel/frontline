@@ -196,8 +196,35 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 /* ---- hero ------------------------------------------------------------------- */
 /* Hero addendum (Owner, 2026-09-29): a tighter rhythm on phones, so the first screen ends on
    the dark board and its kicker, the hand-off that invites the scroll. */
-.hero { --pad-end: var(--s-7); padding-block: var(--s-6) var(--pad-end); text-align: center; }
+.hero {
+  --pad-end: var(--s-7);
+  padding-block: var(--s-6) var(--pad-end);
+  padding-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4rem));
+  text-align: center;
+}
 .hero-inner { display: flex; flex-direction: column; align-items: center; max-inline-size: 46rem; }
+.hero-social {
+  display: flex;
+  justify-content: center;
+  gap: var(--s-2);
+  inline-size: min(100%, 24rem);
+  margin-block-end: var(--s-5);
+}
+.hero-social-link {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 2.9rem;
+  padding-inline: var(--s-3);
+  border: 1px solid var(--copper);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--rust);
+  font-weight: 700;
+  text-decoration: none;
+}
+.hero-social-link:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
 .mark { inline-size: clamp(150px, 42vw, 220px); margin-block-end: var(--s-4); }
 .wordmark { font: 700 var(--t-wordmark) / 1 var(--f-body); letter-spacing: 0.05em; color: var(--ink); }
 .tagline {
@@ -267,7 +294,7 @@ a.btn-line:hover { background: rgb(138 39 36 / 0.07); color: var(--rust-deep); }
    sign-up button and the partner link stay inside an in-app browser (about 700 px tall), and
    the board with its kicker still ends the first screen at 390 x 844. */
 @media (max-width: 899.98px) {
-  .hero { --pad-end: var(--s-6); padding-block-start: var(--s-5); }
+  .hero { --pad-end: var(--s-6); padding-block-start: max(4.5rem, calc(env(safe-area-inset-top) + 4rem)); }
   .mark { inline-size: clamp(112px, 30vw, 220px); margin-block-end: var(--s-3); }
   .tagline { margin-block-start: var(--s-2); }
   .backing.has-logo { margin-block-start: var(--s-4); line-height: 1.45; }

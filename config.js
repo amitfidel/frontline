@@ -13,10 +13,11 @@ window.FRONTLINE = {
   COFFEE_SHOP_NAME: "טלק",
   COFFEE_OFFER: "1+1 קפה",
 
-  // Links and contact. Use the club's identity, never a personal number.
+  // Links and contact.
   SIGNUP_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the union's club enrolment form (the Owner, 2026-10-04)
   PARTNER_EMAIL: "Frontline.club26@gmail.com",  // the club's own address
   PARTNER_WHATSAPP: "+972587716766",            // +972 5X-XXX-XXXX or 05X-XXX-XXXX
+  OFEK_WHATSAPP: "+972504448459",               // owner-provided number for the top WhatsApp link
   INSTAGRAM_URL: "https://www.instagram.com/front_line_club/", // full https:// link
   AGUDA_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the same link as SIGNUP_URL, as the Owner decided (one link for both)
   AGUDA_LOGO: "assets/img/aguda.webp",         // shows unlinked until AGUDA_URL is real
