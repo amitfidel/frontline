@@ -21,8 +21,8 @@ window.FRONTLINE = {
   INSTAGRAM_URL: "https://www.instagram.com/front_line_club/", // full https:// link
   AGUDA_URL: "https://reichman-clubs-enroll.com/Registration?lang=he", // the same link as SIGNUP_URL, as the Owner decided (one link for both)
   AGUDA_LOGO: "assets/img/aguda.webp",         // shows unlinked until AGUDA_URL is real
-  // The university logo appears only beside BACKING_TEXT, and only once that
-  // line is filled: on its own it would claim backing nobody approved yet.
+  // The university logo appears between the top social links only once BACKING_TEXT
+  // is filled: on its own it would claim backing nobody approved yet.
   REICHMAN_LOGO: "assets/img/reichman.webp",
 
   // Facts about the cohort.

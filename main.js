@@ -274,13 +274,15 @@
     n.replaceWith(n.hasAttribute("data-ltr") ? ltr(out) : plain(key, out));
   });
 
-  // ---- university logo: only beside a filled backing line --------------------
+  // ---- university logo: centered between the top social links ----------------
   // On its own the logo would claim backing whose wording nobody approved, so it
-  // appears only next to BACKING_TEXT, and never while that is still a chip.
-  const backing = doc.querySelector(".backing");
-  if (backing && !blank(C.BACKING_TEXT) && !blank(C.REICHMAN_LOGO)) {
-    backing.prepend(logo(C.REICHMAN_LOGO, "backing-logo", "אוניברסיטת רייכמן", [382, 234]));
-    backing.classList.add("has-logo");
+  // appears only once BACKING_TEXT is confirmed, and never while it is still a chip.
+  const reichmanMark = doc.querySelector("[data-reichman-logo]");
+  if (reichmanMark && !blank(C.BACKING_TEXT) && !blank(C.REICHMAN_LOGO)) {
+    reichmanMark.append(logo(C.REICHMAN_LOGO, "backing-logo", "אוניברסיטת רייכמן", [382, 234]));
+    reichmanMark.closest(".hero-social")?.classList.add("has-reichman");
+  } else {
+    reichmanMark?.remove();
   }
 
   // ---- people ---------------------------------------------------------------
